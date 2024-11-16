@@ -1,0 +1,29 @@
+/* Модальное окно */
+.modal-content {
+    background-color: var(--background-color);
+    border: none;
+    color: var(--text-color);
+}
+
+.modal-header, .modal-footer {
+    border: none;
+}
+
+button.btn-secondary {
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 2px solid var(--border-color);
+}
+
+button.btn-secondary:hover {
+    background-color: var(--highlight-color);
+    border-color: var(--highlight-color);
+}
+
+button.btn-primary {
+    background-color: var(--highlight-color);
+    border: none;
+}
+
+button.btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}

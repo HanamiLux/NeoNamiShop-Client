@@ -1,0 +1,43 @@
+.parallax-container {
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+}
+
+.parallax-gradient-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0) 100%
+    );
+    z-index: 1;
+}
+
+.parallax-gradient-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(to top,
+    rgba(0, 0, 0, 1) 5%,
+    rgba(0, 0, 0, 0) 100%
+    );
+    z-index: 1;
+}
+
+.parallax-title {
+    position: absolute;
+    bottom: -90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
