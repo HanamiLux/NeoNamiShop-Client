@@ -1,0 +1,51 @@
+/* Navbar (горизонтальный поверх картинки) */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7); /* Затемнение */
+    height: var(--navbar-height);
+    padding: 0 20px;
+    position: fixed; /* Навбар всегда сверху */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    backdrop-filter: blur(5px); /* Размытие заднего фона */
+}
+
+.navbar-brand {
+    color: var(--text-color);
+    font-size: 2rem;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 15px;
+    transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+    color: var(--highlight-color);
+}
+
+/* Ссылки в навбаре */
+.nav-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px 15px;
+    border-radius: 15px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--highlight-color);
+}

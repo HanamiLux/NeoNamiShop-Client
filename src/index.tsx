@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './styles/App.css';
+import './styles/carousel.css';
+import './styles/modal.css';
+import './styles/navbar.css';
+import './styles/product-card.css';
+import './styles/parallax.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

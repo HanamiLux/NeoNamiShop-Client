@@ -1,0 +1,49 @@
+/* Подключение шрифта */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@font-face {
+  font-family: 'Takashimura';
+  src: url('/public/assets/fonts/EastAP.ttf') format('truetype'),
+  url('/public/assets/fonts/Takashimura RUS.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/* Переменные CSS */
+:root {
+  --background-color: rgba(0, 0, 0, 1);
+  --highlight-color: #8b0000;
+  --text-color: white;
+  --border-color: white;
+  --navbar-height: 60px;
+  --font-family: 'Roboto', sans-serif;
+}
+
+/* Основные стили приложения */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-family), sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Стили для кнопок */
+button {
+  color: var(--text-color);
+  background-color: rgba(0, 0, 0, 0.9); /* Непрозрачный фон */
+  border: 2px solid var(--border-color);
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 15px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--highlight-color);
+  border-color: var(--highlight-color);
+}
+
+.content {
+  margin-bottom: 10rem;
+}
