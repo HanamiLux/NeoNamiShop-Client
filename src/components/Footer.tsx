@@ -1,47 +1,50 @@
 import React from 'react';
+import '../styles/footer.css';
+import ParallaxBackground from "./ParallaxBackground";
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-900 text-white py-12">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div>
-                        <h3 className="text-xl font-bold mb-4">О нас</h3>
-                        <p className="text-gray-400">
-                            Мы предлагаем широкий выбор японских товаров высочайшего качества
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold mb-4">Контакты</h3>
-                        <ul className="text-gray-400">
-                            <li className="mb-2">Телефон: +7 (999) 123-45-67</li>
-                            <li className="mb-2">Email: info@japanstore.ru</li>
-                            <li className="mb-2">Адрес: г. Москва, ул. Японская, 1</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold mb-4">Информация</h3>
-                        <ul className="text-gray-400">
-                            <li className="mb-2">Доставка</li>
-                            <li className="mb-2">Оплата</li>
-                            <li className="mb-2">Возврат</li>
-                            <li className="mb-2">FAQ</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold mb-4">Мы в соцсетях</h3>
-                        <ul className="text-gray-400">
-                            <li className="mb-2">VK</li>
-                            <li className="mb-2">Telegram</li>
-                            <li className="mb-2">WhatsApp</li>
-                        </ul>
-                    </div>
+        <>
+        <ParallaxBackground title="" image="/assets/images/footer-bg.jpg"/>
+        <footer className="footer">
+            <div className="footer-container">
+                <div className="footer-section">
+                    <h3 className="footer-heading">О нас</h3>
+                    <p className="footer-text">
+                        Мы предлагаем широкий выбор японских товаров высочайшего качества
+                    </p>
                 </div>
-                <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-                    <p>&copy; 2024 Japan Store. Все права защищены.</p>
+                <div className="footer-section">
+                    <h3 className="footer-heading">Контакты</h3>
+                    <ul className="footer-list">
+                        <li>Телефон: +7 (999) 123-45-67</li>
+                        <li>Email: info@neonami.ru</li>
+                        <li>Адрес: г. Москва, ул. Декабристов, 1</li>
+                    </ul>
+                </div>
+                <div className="footer-section">
+                    <h3 className="footer-heading">Информация</h3>
+                    <ul className="footer-list">
+                        <li>Доставка</li>
+                        <li>Оплата</li>
+                        <li>Возврат</li>
+                        <li>FAQ</li>
+                    </ul>
+                </div>
+                <div className="footer-section">
+                    <h3 className="footer-heading">Мы в соцсетях</h3>
+                    <ul className="footer-list">
+                        <li>VK</li>
+                        <li>Telegram</li>
+                        <li>WhatsApp</li>
+                    </ul>
                 </div>
             </div>
+            <div className="footer-bottom">
+                <p>&copy; 2024 NeoNami Store. Все права защищены.</p>
+            </div>
         </footer>
+        </>
     );
 };
 

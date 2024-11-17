@@ -1,5 +1,5 @@
 .parallax-container {
-    height: 500px;
+    height: 600px;
     position: relative;
     overflow: hidden;
 }
@@ -34,7 +34,6 @@
     position: absolute;
     bottom: -90%;
     left: 50%;
-    transform: translate(-50%, -50%);
     color: white;
     font-weight: bold;
     text-align: center;

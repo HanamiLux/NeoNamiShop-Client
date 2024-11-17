@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ProductCard from './ProductCard';
 
 interface ProductsCarouselProps {
@@ -9,27 +9,8 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
     const [visibleProducts, setVisibleProducts] = useState<number[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const carouselRef = useRef<HTMLDivElement>(null);
     const autoScrollRef = useRef<NodeJS.Timeout>();
-
-    useEffect(() => {
-        // Инициализация первых пяти видимых элементов
-        updateVisibleProducts(0);
-        startAutoScroll();
-
-        return () => {
-            if (autoScrollRef.current) {
-                clearInterval(autoScrollRef.current);
-            }
-        };
-    }, [products]);
-
-    const resetAutoScroll = useCallback(() => {
-        if (autoScrollRef.current) {
-            clearInterval(autoScrollRef.current);
-        }
-        startAutoScroll();
-    },[products]);
+    const isMouseOver = useRef(false);
 
     const updateVisibleProducts = useCallback((centerIndex: number) => {
         const indices = [];
@@ -50,50 +31,82 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
 
         setCurrentIndex(newIndex);
         updateVisibleProducts(newIndex);
-        resetAutoScroll();
 
-        // Сброс флага анимации
         setTimeout(() => {
             setIsTransitioning(false);
-        }, 300); // Время должно совпадать с длительностью CSS-анимации
-    }, [currentIndex, isTransitioning, products.length, resetAutoScroll, updateVisibleProducts]);
+        }, 300);
+    }, [currentIndex, isTransitioning, products.length, updateVisibleProducts]);
 
     const startAutoScroll = useCallback(() => {
+        if (autoScrollRef.current) {
+            clearInterval(autoScrollRef.current);
+        }
+
         autoScrollRef.current = setInterval(() => {
-            handleScroll('right');
+            if (!isMouseOver.current && !isTransitioning) {
+                handleScroll('right');
+            }
         }, 5000);
     }, [handleScroll]);
 
+    // Инициализация карусели
+    useEffect(() => {
+        updateVisibleProducts(currentIndex);
+        startAutoScroll();
+
+        return () => {
+            if (autoScrollRef.current) {
+                clearInterval(autoScrollRef.current);
+            }
+        };
+    }, [currentIndex, products, updateVisibleProducts, startAutoScroll]);
+
+    // Обработка ручной прокрутки
+    const handleManualScroll = useCallback((direction: 'left' | 'right') => {
+        handleScroll(direction);
+        // Перезапускаем автопрокрутку после ручного переключения
+        startAutoScroll();
+    }, [handleScroll, startAutoScroll]);
+
+    const handleMouseEnter = useCallback(() => {
+        isMouseOver.current = true;
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        isMouseOver.current = false;
+    }, []);
+
     const getItemClass = (index: number) => {
-        const position = index - 2; // -2, -1, 0, 1, 2
+        const position = index - 2;
         const classes = ['carousel-item'];
 
+        if (isTransitioning) classes.push('transitioning');
         if (position === 0) classes.push('active');
         if (position === -2) classes.push('far-left');
         if (position === -1) classes.push('left');
         if (position === 1) classes.push('right');
         if (position === 2) classes.push('far-right');
-        if (isTransitioning) classes.push('transitioning');
 
         return classes.join(' ');
     };
 
     return (
         <div className="products-carousel">
-            <div className="carousel-wrapper">
+            <div
+                className="carousel-wrapper"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
                 <button
                     className="carousel-nav left"
-                    onClick={() => handleScroll('left')}
+                    onClick={() => handleManualScroll('left')}
                 >
                     &lt;
                 </button>
-                <div
-                    className="carousel-container"
-                    ref={carouselRef}
-                >
+                <div className="carousel-container content">
                     {visibleProducts.map((productIndex, index) => (
                         <div
-                            key={`${productIndex}-${index}`}
+                            key={`${productIndex}-${products[productIndex].title}`}
                             className={getItemClass(index)}
                         >
                             <ProductCard
@@ -106,7 +119,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
                 </div>
                 <button
                     className="carousel-nav right"
-                    onClick={() => handleScroll('right')}
+                    onClick={() => handleManualScroll('right')}
                 >
                     &gt;
                 </button>

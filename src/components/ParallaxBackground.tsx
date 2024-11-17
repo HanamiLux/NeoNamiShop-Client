@@ -9,14 +9,14 @@ interface ParallaxBackgroundProps {
 const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({ title, image }) => {
     // Динамически определяем размер шрифта на основе длины текста
     const getFontSize = (text: string) => {
-        return text === "ПОПУЛЯРНОЕ" ? "15rem" : "20rem";
+        return text === "ПОПУЛЯРНОЕ" ? "10rem" : "15rem";
     };
     const getTransform = (text: string) => {
-        return text === "ПОПУЛЯРНОЕ" ? "translate(-50%, -90%)" : "translate(-50%, -50%)";
+        return text === "ПОПУЛЯРНОЕ" ? "translate(-50%, -220%)" : "translate(-50%, -120%)";
     };
 
     return (
-        <Parallax bgImage={image} strength={500}>
+        <Parallax bgImage={image} strength={600}>
             <div className="parallax-container">
                 <div className="parallax-gradient-top"></div>
                 <div className="parallax-gradient-bottom"></div>

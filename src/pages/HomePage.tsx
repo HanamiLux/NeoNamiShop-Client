@@ -1,17 +1,14 @@
 import React from 'react';
 import ParallaxBackground from '../components/ParallaxBackground';
 import ProductsCarousel from '../components/ProductsCarousel';
-import imageCity from '../assets/images/popular-bg.jpg'
-import image1 from '../assets/images/popular-bg.jpg'
-import image2 from '../assets/images/popular-bg.jpg'
 import imageBooks from '../assets/images/books.jpg'
 import imageCleanings from '../assets/images/cleanings.jpg'
 import imageDakimakura from '../assets/images/dakimakura.jpg'
 import imageDango from '../assets/images/dango.jpg'
 import imageMochi from '../assets/images/mochi.jpg'
 import imageRobear from '../assets/images/robear.jfif'
-import Footer from "../components/Footer";
 import Haiku from "../components/Haiku";
+import CatalogButton from "../components/CatalogButton";
 
 const mockProducts = [
     { title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
@@ -33,32 +30,33 @@ const HomePage: React.FC = () => {
         <>
             <ParallaxBackground
                 title="ПОПУЛЯРНОЕ"
-                image={imageCity}
+                image="/assets/images/popular-bg.jpg"
             />
             <Haiku theme="ПОПУЛЯРНОЕ" />
             <div className="mt-5 content">
                 <ProductsCarousel products={mockProducts} />
+                <CatalogButton position={"end"} text={"К товарам"}/>
             </div>
 
             <ParallaxBackground
                 title="НОВОЕ"
-                image={image1}
+                image="/assets/images/new-bg.jpg"
             />
             <Haiku theme="НОВОЕ" />
             <div className="mt-5 content">
                 <ProductsCarousel products={mockProducts} />
+                <CatalogButton position={"start"} text={"Смотреть"}/>
             </div>
 
             <ParallaxBackground
                 title="АКЦИЯ"
-                image={image2}
+                image="/assets/images/discounts-bg.jpg"
             />
             <Haiku theme="АКЦИЯ" />
             <div className="mt-5 content">
                 <ProductsCarousel products={mockProducts} />
+                <CatalogButton position={"center"} text={"Все товары"}/>
             </div>
-
-            <Footer />
         </>
     );
 };

@@ -4,6 +4,7 @@ import { Container } from 'react-bootstrap';
 import NavigationBar from './components/NavigationBar';
 import AuthModal from './components/AuthModal';
 import AppRoutes from './Routes';
+import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -15,6 +16,7 @@ const App: React.FC = () => {
         <Container>
           <AppRoutes />
         </Container>
+          <Footer/>
       </Router>
   );
 };

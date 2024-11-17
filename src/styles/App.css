@@ -15,7 +15,7 @@
   --highlight-color: #8b0000;
   --text-color: white;
   --border-color: white;
-  --navbar-height: 60px;
+  --navbar-height: 50px;
   --font-family: 'Roboto', sans-serif;
 }
 
@@ -45,5 +45,5 @@ button:hover {
 }
 
 .content {
-  margin-bottom: 10rem;
+  margin-bottom: 7rem;
 }

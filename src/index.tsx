@@ -6,6 +6,7 @@ import './styles/modal.css';
 import './styles/navbar.css';
 import './styles/product-card.css';
 import './styles/parallax.css';
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
