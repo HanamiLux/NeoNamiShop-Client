@@ -1,49 +1,131 @@
-.orders-list {
+.orders-container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
+.order-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
 .order-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
     padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.order-header h3 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+.order-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.order-header p {
+.order-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.order-date {
+    font-size: 0.9rem;
     opacity: 0.7;
 }
 
 .order-status {
     padding: 0.5rem 1rem;
-    border-radius: 15px;
-    font-weight: bold;
-    text-transform: uppercase;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.order-address {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.order-address i {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .order-items {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .order-item {
     display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.order-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.item-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.item-details h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.item-meta {
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.item-price {
+    font-weight: 600;
 }
 
 .order-footer {
@@ -51,11 +133,78 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 2px solid var(--border-color);
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.action-button:hover {
+    background: var(--highlight-color);
+    border-color: var(--highlight-color);
+}
+
+.action-button.track {
+    border-color: var(--highlight-color);
+    color: var(--highlight-color);
+}
+
+.action-button.track:hover {
+    background: var(--highlight-color);
+    color: white;
 }
 
 .order-total {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.order-total span {
+    color: var(--highlight-color);
+    margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 0;
+    }
+
+    .order-card {
+        padding: 1rem;
+    }
+
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .order-status {
+        align-self: flex-start;
+    }
+
+    .order-footer {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .order-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
 }

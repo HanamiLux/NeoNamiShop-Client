@@ -5,7 +5,7 @@ import "../styles/user-profile.css";
 import "../styles/order.css";
 
 const OrdersPage: React.FC = () => {
-    // Пример данных заказов
+
     const orders: Order[] = [
         {
             orderId: 1,
@@ -51,10 +51,10 @@ const OrdersPage: React.FC = () => {
     ];
 
     // Пример данных пользователя
-    const userProfile = {
+    const user = {
         name: "Иван Иванов",
         email: "ivan.ivanov@example.com",
-        avatar: "/assets/images/avatar.jpg"
+        avatar: "/assets/images/dakimakura.jpg"
     };
 
     const getStatusColor = (status: string): string => {
@@ -77,154 +77,81 @@ const OrdersPage: React.FC = () => {
                 image="/assets/images/orders-bg.jpg"
             />
             <div className="catalog-container content">
-                {/* Профиль пользователя */}
-                <div className="user-profile" style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    margin: '2rem auto',
-                    padding: '2rem',
-                    maxWidth: '600px',
-                    border: '2px solid var(--border-color)',
-                    borderRadius: '15px',
-                    backgroundColor: '#fff',
-                }}>
-                    <img
-                        src={userProfile.avatar}
-                        alt={userProfile.name}
-                        style={{
-                            width: '100px',
-                            height: '100px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                        }}
-                    />
-                    <h2 style={{ fontSize: '1.8rem', margin: 0 }}>{userProfile.name}</h2>
-                    <p style={{ fontSize: '1rem', color: 'gray' }}>{userProfile.email}</p>
+                <div className="user-profile">
+                    <div className="user-avatar">
+                        <img
+                            src={user.avatar}
+                            alt="Аватар пользователя"
+                        />
+                    </div>
+                    <h2 className="user-name">{user.name}</h2>
+                    <p className="user-email">{user.email}</p>
+                    <div className="user-stats">
+                        <div className="user-stat">
+                            <h3 className="user-stat-value">{orders.length}</h3>
+                            <p className="user-stat-label">Всего заказов</p>
+                        </div>
+                        <div className="user-stat">
+                            <h3 className="user-stat-value">
+                                {orders.reduce((total, order) => total + order.total, 0)}₽
+                            </h3>
+                            <p className="user-stat-label">Общая сумма</p>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Список заказов */}
-                <div className="orders-list" style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '2rem',
-                    maxWidth: '1200px',
-                    margin: '0 auto'
-                }}>
+                <div className="orders-container">
                     {orders.map((order) => (
-                        <div
-                            key={order.orderId}
-                            className="product-card"
-                            style={{
-                                width: '100%',
-                                height: 'auto',
-                                minHeight: '200px',
-                                padding: '1.5rem',
-                                backgroundColor: '#fff',
-                                borderRadius: '15px',
-                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                            }}
-                        >
-                            <div className="order-header" style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginBottom: '1.5rem',
-                                borderBottom: '2px solid var(--border-color)',
-                                paddingBottom: '1rem'
-                            }}>
-                                <div>
-                                    <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-                                        Заказ #{order.orderId}
-                                    </h3>
-                                    <p style={{ opacity: 0.7 }}>
+                        <div key={order.orderId} className="order-card">
+                            <div className="order-header">
+                                <div className="order-info">
+                                    <h3 className="order-number">Заказ #{order.orderId}</h3>
+                                    <span className="order-date">
                                         {order.date.toLocaleDateString('ru-RU')}
-                                    </p>
-                                    <p style={{ opacity: 0.7 }}>
-                                        Адрес: {order.address}
-                                    </p>
+                                    </span>
                                 </div>
-                                <div style={{
-                                    padding: '0.5rem 1rem',
-                                    border: `2px solid ${getStatusColor(order.status)}`,
-                                    borderRadius: '15px',
-                                    color: getStatusColor(order.status)
+                                <div className="order-status" style={{
+                                    backgroundColor: `${getStatusColor(order.status)}20`,
+                                    color: getStatusColor(order.status),
+                                    border: `1px solid ${getStatusColor(order.status)}`
                                 }}>
                                     {order.status}
                                 </div>
                             </div>
 
-                            <div className="order-items" style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '1rem'
-                            }}>
+                            <div className="order-address">
+                                <i className="fas fa-map-marker-alt"></i>
+                                {order.address}
+                            </div>
+
+                            <div className="order-items">
                                 {order.items.map((item) => (
-                                    <div key={item.productId} style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '1rem 0',
-                                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-                                    }}>
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '1rem'
-                                        }}>
-                                            <div className="product-image-container" style={{
-                                                width: '80px',
-                                                height: '80px',
-                                                borderRadius: '10px',
-                                                overflow: 'hidden'
-                                            }}>
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    className="product-image"
-                                                />
-                                            </div>
-                                            <div>
-                                                <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
-                                                    {item.name}
-                                                </p>
-                                                <p style={{ opacity: 0.7 }}>
-                                                    Количество: {item.quantity}
-                                                </p>
+                                    <div key={item.productId} className="order-item">
+                                        <div className="item-image">
+                                            <img src={item.image} alt={item.name} />
+                                        </div>
+                                        <div className="item-details">
+                                            <h4>{item.name}</h4>
+                                            <div className="item-meta">
+                                                <span>Количество: {item.quantity}</span>
+                                                <span className="item-price">{item.price}₽</span>
                                             </div>
                                         </div>
-                                        <p style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                                            {item.quantity * item.price}₽
-                                        </p>
                                     </div>
                                 ))}
                             </div>
 
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginTop: '1.5rem',
-                                paddingTop: '1rem',
-                                borderTop: '2px solid var(--border-color)'
-                            }}>
-                                <div style={{
-                                    display: 'flex',
-                                    gap: '1rem'
-                                }}>
-                                    <button className="category-tab">
+                            <div className="order-footer">
+                                <div className="order-actions">
+                                    <button className="action-button track">
                                         Отследить
                                     </button>
-                                    <button className="category-tab">
+                                    <button className="action-button details">
                                         Подробнее
                                     </button>
                                 </div>
-                                <div style={{
-                                    fontSize: '1.5rem',
-                                    fontWeight: 'bold'
-                                }}>
-                                    Итого: {order.total}₽
+                                <div className="order-total">
+                                    Итого: <span>{order.total}₽</span>
                                 </div>
                             </div>
                         </div>

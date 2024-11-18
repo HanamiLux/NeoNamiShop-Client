@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import '../styles/modal.css';
 
 interface AuthModalProps {
     show: boolean;
@@ -9,53 +9,51 @@ interface AuthModalProps {
 const AuthModal: React.FC<AuthModalProps> = ({ show, onHide }) => {
     const [isLogin, setIsLogin] = useState(true);
 
-    const handleLogin = () => {
-        // Логика для обработки входа
-        console.log('Вход выполнен');
-        onHide(); // Закрыть модальное окно после входа
-    };
-
-    const handleRegister = () => {
-        // Логика для обработки регистрации
-        console.log('Регистрация выполнена');
-        onHide(); // Закрыть модальное окно после регистрации
-    };
+    if (!show) {
+        return null;
+    }
 
     return (
-        <Modal show={show} onHide={onHide}>
-            <Modal.Header closeButton>
-                <Modal.Title>{isLogin ? 'Вход' : 'Регистрация'}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
+                    <button className="btn-secondary close-btn" onClick={onHide}>
+                        &times;
+                    </button>
+                </div>
+                <div className="modal-body">
                     {!isLogin && (
-                        <Form.Group controlId="formBasicName">
-                            <Form.Label>Имя</Form.Label>
-                            <Form.Control type="text" placeholder="Введите имя" />
-                        </Form.Group>
+                        <div className="form-group">
+                            <label htmlFor="name">Логин</label>
+                            <input type="text" id="name" placeholder="Введите отображаемое имя" />
+                        </div>
                     )}
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control type="email" placeholder="Введите email" />
-                    </Form.Group>
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Пароль</Form.Label>
-                        <Form.Control type="password" placeholder="Введите пароль" />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={onHide}>
-                    Закрыть
-                </Button>
-                <Button variant="primary" onClick={isLogin ? handleLogin : handleRegister}>
-                    {isLogin ? 'Войти' : 'Зарегистрироваться'}
-                </Button>
-                <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
-                    {isLogin ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите'}
-                </Button>
-            </Modal.Footer>
-        </Modal>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input type="email" id="email" placeholder="Введите email" />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Пароль</label>
+                        <input type="password" id="password" placeholder="Введите пароль" />
+                    </div>
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-important " onClick={() => {
+                        console.log(isLogin ? 'Вход выполнен' : 'Регистрация выполнена');
+                        onHide();
+                    }}>
+                        {isLogin ? 'Войти' : 'Зарегистрироваться'}
+                    </button>
+                    <button
+                        className="btn-link"
+                        onClick={() => setIsLogin(!isLogin)}
+                    >
+                        {isLogin ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите'}
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 };
 

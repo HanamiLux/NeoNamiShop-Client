@@ -11,7 +11,7 @@ const App: React.FC = () => {
 
   return (
       <Router>
-        <NavigationBar />
+        <NavigationBar onShowAuthModal={() => setShowAuthModal(true)} />
         <AuthModal show={showAuthModal} onHide={() => setShowAuthModal(false)} />
         <Container>
           <AppRoutes />

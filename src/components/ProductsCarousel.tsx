@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ProductCard from './ProductCard';
+import '../styles/carousel.css';
 
 interface ProductsCarouselProps {
     products: Array<{ title: string; rating: number; image: string }>;

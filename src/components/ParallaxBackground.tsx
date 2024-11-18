@@ -1,5 +1,6 @@
 import React from 'react';
 import { Parallax } from 'react-parallax';
+import '../styles/parallax.css';
 
 interface ParallaxBackgroundProps {
     title: string;

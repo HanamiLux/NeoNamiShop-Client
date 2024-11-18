@@ -1,7 +1,13 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import '../styles/navbar.css';
 
-const NavigationBar: React.FC = () => {
+
+interface NavigationBarProps {
+    onShowAuthModal: () => void;
+}
+
+const NavigationBar: React.FC<NavigationBarProps> = ({ onShowAuthModal }) => {
     useEffect(() => {
         let prevScrollPos = window.pageYOffset;
         let isNavbarVisible = true;
@@ -73,10 +79,14 @@ const NavigationBar: React.FC = () => {
             <ul className="nav-links">
                 <li><Link to="/">Главная</Link></li>
                 <li><Link to="/catalog">Каталог</Link></li>
-                <li><Link to="/orders">Мои заказы</Link></li>
-                <li><Link to="/profile">Мой профиль</Link></li>
+                <li><Link to="/profile">Профиль</Link></li>
                 <li><Link to="/admin">Админ-панель</Link></li>
                 <li><Link to="/manager">Менеджер-панель</Link></li>
+                <li>
+                    <button className="btn-important" onClick={onShowAuthModal}>
+                        Вход/Регистрация
+                    </button>
+                </li>
             </ul>
         </nav>
     );

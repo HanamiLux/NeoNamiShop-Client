@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/product-card.css';
 
 interface ProductCardProps {
     title: string;

@@ -31,6 +31,8 @@ body {
 /* Стили для кнопок */
 button {
   color: var(--text-color);
+  font-family: var(--font-family), serif;
+  font-weight: 600;
   background-color: rgba(0, 0, 0, 0.9); /* Непрозрачный фон */
   border: 2px solid var(--border-color);
   padding: 8px 15px;
@@ -47,3 +49,13 @@ button:hover {
 .content {
   margin-bottom: 7rem;
 }
+
+.btn-important{
+  background-color: rgba(139, 0, 0, 0.37);
+  border-color: var(--highlight-color);
+}
+
+.btn-important:hover{
+  background-color: var(--highlight-color);
+}
+

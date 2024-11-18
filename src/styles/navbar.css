@@ -53,3 +53,8 @@
 .nav-links a:hover {
     color: var(--highlight-color);
 }
+
+li{
+    display: block;
+    align-content: center;
+}
