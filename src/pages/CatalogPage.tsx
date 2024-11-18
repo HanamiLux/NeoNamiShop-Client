@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/catalog.css';
 import ProductCard from '../components/ProductCard';
-import Footer from "../components/Footer";
 import ParallaxBackground from "../components/ParallaxBackground";
 
 interface Product {
@@ -138,7 +137,7 @@ const CatalogPage: React.FC = () => {
 
     return (
         <>
-            <ParallaxBackground title="ТОВАРЫ" image="/assets/images/catalog-bg.jpg" />
+            <ParallaxBackground title="ТОВАРЫ" image="/assets/images/catalog5.png" />
         <div className="catalog-container">
             <div className="catalog-header">
                 <div className="search-container">
