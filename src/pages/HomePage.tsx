@@ -11,18 +11,18 @@ import Haiku from "../components/Haiku";
 import CatalogButton from "../components/CatalogButton";
 
 const mockProducts = [
-    { title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
-    { title: 'Хелперы по дому', rating: 4.8, image: imageCleanings },
-    { title: 'Шар в рот', rating: 3.7, image: imageDango },
-    { title: 'Подарок подруге', rating: 5.0, image: imageDakimakura },
-    { title: 'Моти', rating: 5.0, image: imageMochi },
-    { title: 'Робот-медведь', rating: 5.0, image: imageRobear },
-    { title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
-    { title: 'Хелперы по дому', rating: 4.8, image: imageCleanings },
-    { title: 'Шар в рот', rating: 3.7, image: imageDango },
-    { title: 'Подарок подруге', rating: 5.0, image: imageDakimakura },
-    { title: 'Моти', rating: 5.0, image: imageMochi },
-    { title: 'Робот-медведь', rating: 5.0, image: imageRobear },
+    { id: 1, title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
+    { id: 2, title: 'Хелперы по дому', rating: 4.8, image: imageCleanings },
+    { id: 3, title: 'Шар в рот', rating: 3.7, image: imageDango },
+    { id: 4, title: 'Подарок подруге', rating: 5.0, image: imageDakimakura },
+    { id: 5, title: 'Моти', rating: 5.0, image: imageMochi },
+    { id: 6, title: 'Робот-медведь', rating: 5.0, image: imageRobear },
+    { id: 7, title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
+    { id: 8, title: 'Хелперы по дому', rating: 4.8, image: imageCleanings },
+    { id: 9, title: 'Шар в рот', rating: 3.7, image: imageDango },
+    { id: 10, title: 'Подарок подруге', rating: 5.0, image: imageDakimakura },
+    { id: 11, title: 'Моти', rating: 5.0, image: imageMochi },
+    { id: 12, title: 'Робот-медведь', rating: 5.0, image: imageRobear },
 ];
 
 const HomePage: React.FC = () => {

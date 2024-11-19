@@ -194,6 +194,7 @@ const CatalogPage: React.FC = () => {
                     {products.map((product) => (
                         <ProductCard
                             key={product.id}
+                            id={product.id}
                             title={product.title}
                             rating={product.rating}
                             image={product.image}

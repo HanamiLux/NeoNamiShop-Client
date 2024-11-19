@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ParallaxBackground from "../components/ParallaxBackground";
 import "../styles/user-profile.css";
+import {ReviewCard} from "../components/Card_review";
 
 const ProfilePage = () => {
     const [formData, setFormData] = useState({
@@ -14,47 +15,21 @@ const ProfilePage = () => {
     });
 
     const reviews = [
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-        { id: 1, product: 'Товар 1', text: 'Отличный товар!', productId: 101 },
-        { id: 2, product: 'Товар 2', text: 'Очень качественно!', productId: 102 },
-        { id: 3, product: 'Товар 3', text: 'Не соответствует описанию.', productId: 103 },
-        { id: 4, product: 'Товар 4', text: 'Превосходно!', productId: 104 },
-        { id: 5, product: 'Товар 5', text: 'Доставили вовремя.', productId: 105 },
-
+        {
+            id: 1,
+            product: 'Товар 1',
+            text: 'Отличный товар! Очень доволен покупкой. Качество на высоте.',
+            productId: 101,
+            rating: 5
+        },
+        {
+            id: 2,
+            product: 'Товар 2',
+            text: 'Очень качественно! Рекомендую всем.',
+            productId: 102,
+            rating: 4
+        },
+        // ... rest of your reviews with ratings added
     ];
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -86,9 +61,7 @@ const ProfilePage = () => {
                     <h3>Мои отзывы</h3>
                     <ul>
                         {reviews.map(review => (
-                            <li key={review.id} onClick={() => handleReviewClick(review.productId)}>
-                                <p><strong>{review.product}:</strong> {review.text}</p>
-                            </li>
+                            <ReviewCard key={review.id} review={review} />
                         ))}
                     </ul>
                 </div>

@@ -3,7 +3,7 @@ import ProductCard from './ProductCard';
 import '../styles/carousel.css';
 
 interface ProductsCarouselProps {
-    products: Array<{ title: string; rating: number; image: string }>;
+    products: Array<{ id: number, title: string; rating: number; image: string }>;
 }
 
 const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
@@ -111,6 +111,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
                             className={getItemClass(index)}
                         >
                             <ProductCard
+                                id={products[productIndex].id}
                                 title={products[productIndex].title}
                                 rating={products[productIndex].rating}
                                 image={products[productIndex].image}

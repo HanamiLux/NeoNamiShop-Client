@@ -17,7 +17,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({ title, image })
     };
 
     return (
-        <Parallax bgImage={image} strength={600}>
+        <Parallax bgImage={image} strength={300}>
             <div className="parallax-container">
                 <div className="parallax-gradient-top"></div>
                 <div className="parallax-gradient-bottom"></div>
