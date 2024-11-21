@@ -87,4 +87,7 @@
     color: var(--highlight-color);
     font-weight: bold;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }

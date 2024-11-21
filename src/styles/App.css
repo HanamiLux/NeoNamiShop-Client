@@ -60,3 +60,7 @@ button:hover {
   background-color: var(--highlight-color);
 }
 
+a {
+  text-decoration: none;
+}
+

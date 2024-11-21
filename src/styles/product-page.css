@@ -96,12 +96,6 @@
     color: white;
 }
 
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 .product-actions {
     display: flex;
     gap: 1rem;
