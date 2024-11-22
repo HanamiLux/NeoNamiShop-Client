@@ -1,77 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/navbar.css';
-
+import {User} from "lucide-react";
 
 interface NavigationBarProps {
     onShowAuthModal: () => void;
+    onLogout: () => void;
+    user: { userId: string; email: string; login: string } | null;
 }
 
-const NavigationBar: React.FC<NavigationBarProps> = ({ onShowAuthModal }) => {
+const NavigationBar: React.FC<NavigationBarProps> = ({ onShowAuthModal, onLogout, user }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
     useEffect(() => {
-        let prevScrollPos = window.pageYOffset;
-        let isNavbarVisible = true;
-        const navbar = document.querySelector('.navbar') as HTMLElement;
-        let timeout: NodeJS.Timeout;
-        let lastScrollPosForTimer = prevScrollPos; // Хранит позицию прокрутки для проверки актуальности
+        if (user) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+    }, [user]);
 
-        const handleScroll = () => {
-            const currentScrollPos = window.pageYOffset;
-
-            // Если экран в самом верху, всегда показываем навбар
-            if (currentScrollPos === 0) {
-                clearTimeout(timeout); // Сбрасываем таймер
-                navbar.style.transform = 'translateY(0)';
-                isNavbarVisible = true;
-                return;
-            }
-
-            // Скролл вниз - прячем навбар
-            if (prevScrollPos < currentScrollPos && isNavbarVisible) {
-                navbar.style.transform = 'translateY(-100%)';
-                isNavbarVisible = false;
-            }
-            // Скролл вверх - показываем навбар
-            else if (prevScrollPos > currentScrollPos && !isNavbarVisible) {
-                clearTimeout(timeout); // Сбрасываем таймер
-                navbar.style.transform = 'translateY(0)';
-                isNavbarVisible = true;
-            }
-
-            prevScrollPos = currentScrollPos;
-        };
-
-        const handleMouseMove = (e: MouseEvent) => {
-            // Если мышь в пределах 50px от верхней части экрана
-            if (e.clientY <= 50) {
-                clearTimeout(timeout); // Сбрасываем таймер
-                navbar.style.transform = 'translateY(0)';
-                isNavbarVisible = true;
-            } else if (prevScrollPos > 100 && !isNavbarVisible) {
-                // Устанавливаем текущую позицию прокрутки для проверки
-                lastScrollPosForTimer = prevScrollPos;
-
-                // Таймер для скрытия навбара
-                timeout = setTimeout(() => {
-                    // Проверяем актуальность: прокрутка не должна измениться
-                    if (lastScrollPosForTimer === prevScrollPos) {
-                        navbar.style.transform = 'translateY(-100%)';
-                        isNavbarVisible = false;
-                    }
-                }, 5000); // Задержка перед скрытием
-            }
-        };
-
-        // Привязка событий
-        window.addEventListener('scroll', handleScroll);
-        document.addEventListener('mousemove', handleMouseMove);
-
-        // Очистка событий при размонтировании компонента
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            document.removeEventListener('mousemove', handleMouseMove);
-        };
-    }, []);
+    const handleLogout = () => {
+        onLogout();
+    };
 
     return (
         <nav className="navbar">
@@ -82,11 +33,19 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onShowAuthModal }) => {
                 <li><Link to="/profile">Профиль</Link></li>
                 <li><Link to="/admin">Админ-панель</Link></li>
                 <li><Link to="/manager">Менеджер-панель</Link></li>
-                <li>
-                    <button className="btn-important" onClick={onShowAuthModal}>
-                        Вход/Регистрация
-                    </button>
-                </li>
+                {isAuthenticated ? (
+                    <li className="user-info">
+                        <div className="user-icon">
+                            <User size={20} color="var(--text-color)" />
+                        </div>
+                        <span className="username">{user?.login}</span>
+                        {/*/path/to/profile/picture/${user?.userId}*/}
+                        <img src={`/assets/images/footer-bg.jpg`} alt="Profile" className="profile-picture" />
+                        <button className="btn-important" onClick={handleLogout}>Выйти</button>
+                    </li>
+                ) : (
+                    <li><button className="btn-important" onClick={onShowAuthModal}>Вход/Регистрация</button></li>
+                )}
             </ul>
         </nav>
     );

@@ -58,3 +58,28 @@ li{
     display: block;
     align-content: center;
 }
+
+/* Для круглой картинки */
+.profile-picture {
+    width: 40px; /* Размер картинки */
+    height: 40px; /* Размер картинки */
+    border-radius: 50%; /* Делаем картинку круглой */
+    object-fit: cover; /* Центруем содержимое, чтобы не растягивалось */
+    border: 2px solid #fff; /* Опционально: добавляем белую рамку */
+    margin-left: 10px; /* Расстояние между именем пользователя и картинкой */
+    cursor: pointer; /* Указываем, что на картинку можно нажать */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.username {
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.user-info{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
