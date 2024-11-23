@@ -30,23 +30,30 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onShowAuthModal, onLogout
             <ul className="nav-links">
                 <li><Link to="/">Главная</Link></li>
                 <li><Link to="/catalog">Каталог</Link></li>
-                <li><Link to="/profile">Профиль</Link></li>
-                <li><Link to="/admin">Админ-панель</Link></li>
-                <li><Link to="/manager">Менеджер-панель</Link></li>
+                {isAuthenticated && (
+                    <>
+                        <li><Link to="/profile">Профиль</Link></li>
+                        <li><Link to="/admin">Админ-панель</Link></li>
+                        <li><Link to="/manager">Менеджер-панель</Link></li>
+                    </>
+                )}
+
                 {isAuthenticated ? (
                     <li className="user-info">
                         <div className="user-icon">
-                            <User size={20} color="var(--text-color)" />
+                            <User size={20} color="var(--text-color)"/>
                         </div>
                         <span className="username">{user?.login}</span>
-                        {/*/path/to/profile/picture/${user?.userId}*/}
-                        <img src={`/assets/images/footer-bg.jpg`} alt="Profile" className="profile-picture" />
+                        <img src={`/assets/images/footer-bg.jpg`} alt="Profile" className="profile-picture"/>
                         <button className="btn-important" onClick={handleLogout}>Выйти</button>
                     </li>
                 ) : (
-                    <li><button className="btn-important" onClick={onShowAuthModal}>Вход/Регистрация</button></li>
+                    <li>
+                        <button className="btn-important" onClick={onShowAuthModal}>Вход/Регистрация</button>
+                    </li>
                 )}
             </ul>
+
         </nav>
     );
 };

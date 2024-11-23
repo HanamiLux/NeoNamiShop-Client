@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Routes, Route, useLocation} from 'react-router-dom';
+import {Routes, Route, useLocation, Navigate} from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CatalogPage from './pages/CatalogPage';
 import OrdersPage from './pages/OrdersPage';
@@ -8,7 +8,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import ProductPage from './pages/ProductPage';
 
-const AppRoutes: React.FC = () => {
+
+interface AppRoutesProps {
+    isAuthenticated: boolean;
+}
+
+const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
     const { pathname } = useLocation();
 
     useEffect(() => {
@@ -23,11 +28,22 @@ const AppRoutes: React.FC = () => {
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/catalog" element={<CatalogPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/product/:id" element={<ProductPage />} />
+
+            {/* Защищенные маршруты */}
+            <Route
+                path="/profile"
+                element={isAuthenticated ? <ProfilePage /> : <Navigate to="/" replace />}
+            />
+            <Route
+                path="/orders"
+                element={isAuthenticated ? <OrdersPage /> : <Navigate to="/" replace />}
+            />
+
+
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/manager" element={<ManagerDashboard />} />
-            <Route path="/product/:id" element={<ProductPage />} />
+
         </Routes>
     );
 };

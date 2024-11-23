@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 const App: React.FC = () => {
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [user, setUser] = useState<{ userId: string; email: string; login: string } | null>(null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Для проверки авторизации
 
     // Проверка локального хранилища при загрузке
     useEffect(() => {
@@ -19,6 +20,8 @@ const App: React.FC = () => {
         if (userId && email && login) {
             setUser({ userId, email, login });
         }
+
+        setIsCheckingAuth(false); // Завершаем проверку
     }, []);
 
     const handleLogin = (userData: { userId: string; email: string; login: string }) => {
@@ -38,6 +41,11 @@ const App: React.FC = () => {
         setUser(null); // Сбрасываем текущего пользователя
     };
 
+    if (isCheckingAuth) {
+        // Пока идет проверка авторизации, можно показать индикатор загрузки
+        return <div>Загрузка...</div>;
+    }
+
     return (
         <Router>
             <NavigationBar
@@ -51,7 +59,8 @@ const App: React.FC = () => {
                 onLogin={handleLogin} // Передаем функцию для обработки успешного входа
             />
             <Container>
-                <AppRoutes />
+                {/* Передаем данные об авторизации в маршруты */}
+                <AppRoutes isAuthenticated={!!user} />
             </Container>
             <Footer />
         </Router>
