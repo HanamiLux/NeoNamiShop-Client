@@ -5,6 +5,7 @@ import ParallaxBackground from "../components/ParallaxBackground";
 import "../styles/user-profile.css";
 import { ReviewCard } from "../components/Card_review";
 import Notification from '../components/Notification';
+import {UserUtils} from '../utils/UserUtils';
 
 interface Review {
     id: number;
@@ -54,7 +55,7 @@ const ProfilePage = () => {
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
     const navigate = useNavigate();
-    const userId = getUserId();
+    const userId = UserUtils.getUserId();
 
     useEffect(() => {
         if (!userId) {
@@ -357,12 +358,5 @@ const ProfilePage = () => {
     );
 };
 
-const getUserId = () => {
-    const userId = localStorage.getItem('userId');
-    if (!userId || !/^[0-9a-fA-F-]{36}$/.test(userId)) {
-        return null;
-    }
-    return userId;
-};
 
 export default ProfilePage;
