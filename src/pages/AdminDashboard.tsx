@@ -120,7 +120,7 @@ const AdminDatabaseDashboard: React.FC = () => {
                             </table>
 
                             <div className="flex items-center justify-between px-4 py-3 bg-white border-t">
-                                <div className="flex items-center gap-2">
+                                <div className="pagination">
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
                                         disabled={currentPage === 1}
