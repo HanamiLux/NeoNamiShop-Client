@@ -173,6 +173,36 @@ textarea.form-input {
     color: var(--text-color);
 }
 
+/* Стили для выпадающего списка ролей */
+.role-select {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    appearance: none; /* Убираем стандартные стрелки в браузерах */
+    /* Добавляем свою стрелку */
+    background: rgba(255, 255, 255, 0.1) url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right 0.7rem top 50%;
+    background-size: 0.65rem auto;
+    /* Добавляем отступ для стрелки */
+    padding: 0.8rem 2rem 0.8rem 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.role-select:focus {
+    outline: none;
+    border-color: var(--highlight-color);
+}
+
+.role-select option {
+    background: var(--background-color);
+    color: var(--text-color);
+
+}
+
+.role-select:hover {
+    border-color: var(--highlight-color);
+}
+
 .submit-button:hover {
     opacity: 0.9;
 }

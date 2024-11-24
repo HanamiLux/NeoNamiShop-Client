@@ -2,6 +2,7 @@ export interface UserDto {
     userId: string;
     login: string;
     email: string;
+    roleName: string;
 }
 
 export interface CreateUserDto {

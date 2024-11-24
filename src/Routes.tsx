@@ -41,8 +41,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
             />
 
 
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/manager" element={<ManagerDashboard />} />
+            <Route path="/admin" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/" replace />} />
+            <Route path="/manager" element={isAuthenticated ? <ManagerDashboard /> : <Navigate to="/" replace />} />
 
         </Routes>
     );

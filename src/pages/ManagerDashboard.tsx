@@ -72,6 +72,11 @@ const ManagerDashboard: React.FC = () => {
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [editingUser, setEditingUser] = useState<string | null>(null);
+
+    const toggleEditingUser = (userId: string) => {
+        setEditingUser(editingUser === userId ? null : userId);
+    };
 
     // Состояния для новых элементов
     const [newProduct, setNewProduct] = useState({
@@ -243,6 +248,9 @@ const ManagerDashboard: React.FC = () => {
     useEffect(() => {
         if (activeTab === 'users') {
             fetchUsers();
+            if (roles.length === 0) {
+                fetchRoles();
+            }
         }
     }, [activeTab, page]);
 
@@ -266,6 +274,26 @@ const ManagerDashboard: React.FC = () => {
         } catch (err) {
             setError('Failed to create role');
             console.error('Error creating role:', err);
+        }
+    };
+
+    const handleRoleChange = async (userId: string, roleName: string) => {
+        try {
+            const role = roles.find(r => r.roleName === roleName);
+            if (!role) {
+                setError('Role not found');
+                return;
+            }
+
+            await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, { roleId: role.roleId }, {
+                params: { userId: UserUtils.getUserId() }
+            });
+
+            // Обновляем состояние пользователей
+            setUsers(users.map(user => user.userId === userId ? { ...user, roleName } : user));
+            setEditingUser(null); // Сбрасываем режим редактирования
+        } catch (err) {
+            setError('Failed to update user role');
         }
     };
 
@@ -293,6 +321,10 @@ const ManagerDashboard: React.FC = () => {
     };
 
     const handleDeleteUser = async (userId: string) => {
+        if(userId === UserUtils.getUserId()){
+            setError('Нельзя удалить себя');
+            return
+        }
         if (!window.confirm('Вы уверены, что хотите удалить этого пользователя?')) {
             return;
         }
@@ -743,6 +775,7 @@ const ManagerDashboard: React.FC = () => {
                             <th>ID</th>
                             <th>Имя</th>
                             <th>Email</th>
+                            <th>Роль</th>
                             <th>Действия</th>
                         </tr>
                         </thead>
@@ -753,11 +786,27 @@ const ManagerDashboard: React.FC = () => {
                                 <td>{user.login}</td>
                                 <td>{user.email}</td>
                                 <td>
+                                    {editingUser === user.userId ? (
+                                        <select
+                                            value={user.roleName}
+                                            onChange={(e) => handleRoleChange(user.userId, e.target.value)}
+                                            className="role-select"
+                                        >
+                                            {roles.map((role) => (
+                                                <option key={role.roleId} value={role.roleName}>
+                                                    {role.roleName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        user.roleName
+                                    )}
+                                </td>
+                                <td>
                                     <div className="action-buttons">
                                         <button
                                             className="action-edit"
-                                            onClick={() => {/* Implement edit logic */
-                                            }}
+                                            onClick={() => toggleEditingUser(user.userId)}
                                         >
                                             <UserCog size={16}/>
                                         </button>
