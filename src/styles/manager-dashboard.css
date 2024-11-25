@@ -174,7 +174,7 @@ textarea.form-input {
 }
 
 /* Стили для выпадающего списка ролей */
-.role-select {
+select {
     border-radius: 8px;
     border: 1px solid var(--border-color);
     color: var(--text-color);
@@ -188,7 +188,7 @@ textarea.form-input {
     transition: all 0.3s ease;
 }
 
-.role-select:focus {
+select:focus {
     outline: none;
     border-color: var(--highlight-color);
 }
@@ -208,6 +208,22 @@ option {
 
 .cancel-button:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+details ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+details ul li img {
+    border-radius: 4px;
 }
 
 @media (max-width: 768px) {

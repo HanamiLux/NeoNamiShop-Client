@@ -838,6 +838,7 @@ const ManagerDashboard: React.FC = () => {
                             <tr>
                                 <th>ID</th>
                                 <th>Пользователь</th>
+                                <th>Адрес</th>
                                 <th>Статус</th>
                                 <th>Сумма</th>
                                 <th>Дата создания</th>
@@ -845,18 +846,21 @@ const ManagerDashboard: React.FC = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {orders.map((order) => (
+                            {orders?.map((order) => (
                                 <tr key={order.orderId}>
                                     <td>{order.orderId}</td>
                                     <td>{order.userId}</td>
+                                    <td>{order.address}</td>
                                     <td>
                                         <select
                                             value={order.status}
-                                            onChange={(e) => handleUpdateOrderStatus(order.orderId, e.target.value as Order['status'])}
+                                            onChange={(e) =>
+                                                handleUpdateOrderStatus(order.orderId, e.target.value as Order['status'])
+                                            }
                                             className="status-select"
                                         >
                                             <option value="new">Новый</option>
-                                            <option value="processing">В обработке</option>
+                                            <option value="pending">В обработке</option>
                                             <option value="completed">Завершен</option>
                                             <option value="cancelled">Отменен</option>
                                         </select>
@@ -864,26 +868,43 @@ const ManagerDashboard: React.FC = () => {
                                     <td>{order.total} ₽</td>
                                     <td>{new Date(order.date).toLocaleString()}</td>
                                     <td>
-                                        <div className="action-buttons">
-                                            <button className="action-view">
-                                                <Eye size={16}/>
-                                            </button>
-                                        </div>
+                                        <details>
+                                            <summary>Товары</summary>
+                                            <ul>
+                                                {order.products?.map((product) => (
+                                                    <li key={product.orderedProductId}>
+                                                        <img
+                                                            src={product.imagesUrlAtOrder}
+                                                            alt={product.productName}
+                                                            style={{width: "50px", marginRight: "10px"}}
+                                                        />
+                                                        {product.productName} — {product.quantity} шт., {product.priceAtOrder} ₽
+                                                    </li>
+                                                )) || <li>Нет товаров</li>}
+                                            </ul>
+                                        </details>
                                     </td>
                                 </tr>
-                            ))}
+                            )) || (
+                                <tr>
+                                    <td colSpan={7} style={{textAlign: "center"}}>
+                                        Нет данных для отображения
+                                    </td>
+                                </tr>
+                            )}
                             </tbody>
+
                         </table>
                         <div className="pagination">
                             <button
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
                             >
                                 <ChevronLeft size={16}/>
                             </button>
                             <span>Страница {page} из {totalPages || 1}</span>
                             <button
-                                onClick={() => setPage(p => p + 1)}
+                                onClick={() => setPage((p) => p + 1)}
                                 disabled={page * limit >= totalOrders}
                             >
                                 <ChevronRight size={16}/>
@@ -894,6 +915,7 @@ const ManagerDashboard: React.FC = () => {
             </div>
         );
     };
+
 
     const renderUsersTab = () => {
         const totalPages = Math.ceil(totalUsers / limit);

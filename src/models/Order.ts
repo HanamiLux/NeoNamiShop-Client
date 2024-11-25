@@ -3,13 +3,14 @@ export interface Order {
     userId: string;
     date: Date;
     address: string;
-    status: 'new' | 'processing' | 'completed' | 'cancelled';
-    items: {
-        productId: number;
+    status: 'new' | 'pending' | 'completed' | 'cancelled';
+    products: {
+        description: string;
+        orderedProductId: number;
         quantity: number;
-        image: string;
-        name: string;
-        price: number;
+        imagesUrlAtOrder: string;
+        productName: string;
+        priceAtOrder: number;
     }[];
     total: number;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Minus, Plus, ShoppingCart } from 'lucide-react';
-import {useCart} from "./CartProvider";
+import { useCart } from "./CartProvider";
 import "../styles/modal.css";
 
 interface CartModalProps {
@@ -9,12 +9,49 @@ interface CartModalProps {
 }
 
 const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
-    const { items, updateQuantity, removeFromCart } = useCart();
+    const { items, updateQuantity, removeFromCart, clearCart } = useCart();
 
     if (!isOpen) return null;
 
     const calculateTotal = () => {
         return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    };
+
+    const handleOrderSubmit = async () => {
+        if (items.length === 0) {
+            alert("Корзина пуста!");
+            return;
+        }
+
+        const orderData = {
+            address: "Ваш адрес доставки", // Здесь вы можете запросить адрес у пользователя
+            total: calculateTotal(),
+            products: items.map((item) => ({
+                productId: item.productId,
+                quantity: item.quantity,
+            })),
+        };
+
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/orders?userId=${localStorage.getItem("userId")}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Не удалось оформить заказ");
+            }
+
+            alert("Заказ успешно оформлен!");
+            clearCart(); // Очищаем корзину после успешного оформления
+            onClose();
+        } catch (error) {
+            console.error("Ошибка оформления заказа:", error);
+            alert("Не удалось оформить заказ. Попробуйте снова.");
+        }
     };
 
     return (
@@ -80,7 +117,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                         <div className="font-bold">
                             Итого: {calculateTotal().toLocaleString()}₽
                         </div>
-                        <button className="btn-important">
+                        <button className="btn-important" onClick={handleOrderSubmit}>
                             Оформить заказ
                         </button>
                     </div>

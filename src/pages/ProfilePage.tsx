@@ -220,7 +220,7 @@ const ProfilePage = () => {
                         <div className="user-profile">
                             <div className="user-avatar">
                                 <img
-                                    src="/assets/images/dakimakura.jpg"
+                                    src="/assets/images/footer-bg.jpg"
                                     alt="Аватар пользователя"
                                 />
                             </div>
