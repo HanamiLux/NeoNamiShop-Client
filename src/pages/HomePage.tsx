@@ -1,31 +1,93 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ParallaxBackground from '../components/ParallaxBackground';
 import ProductsCarousel from '../components/ProductsCarousel';
-import imageBooks from '../assets/images/books.jpg'
-import imageCleanings from '../assets/images/cleanings.jpg'
-import imageDakimakura from '../assets/images/dakimakura.jpg'
-import imageDango from '../assets/images/dango.jpg'
-import imageMochi from '../assets/images/mochi.jpg'
-import imageRobear from '../assets/images/robear.jfif'
 import Haiku from "../components/Haiku";
 import CatalogButton from "../components/CatalogButton";
+import { ProductDto } from '../models/Product'; // You'll need to create this type based on your API
+import Notification from '../components/Notification';
 
-const mockProducts = [
-    { id: 1, title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
-    { id: 2, title: 'Хелперы по дому', rating: 4.8, image: imageCleanings },
-    { id: 3, title: 'Шар в рот', rating: 3.7, image: imageDango },
-    { id: 4, title: 'Подарок подруге', rating: 5.0, image: imageDakimakura },
-    { id: 5, title: 'Моти', rating: 5.0, image: imageMochi },
-    { id: 6, title: 'Робот-медведь', rating: 5.0, image: imageRobear },
-    { id: 7, title: 'Учебник みんなの日本語', rating: 4.5, image: imageBooks },
-    { id: 8, title: 'Хелперы по дому', rating: 4.8, image: imageCleanings },
-    { id: 9, title: 'Шар в рот', rating: 3.7, image: imageDango },
-    { id: 10, title: 'Подарок подруге', rating: 5.0, image: imageDakimakura },
-    { id: 11, title: 'Моти', rating: 5.0, image: imageMochi },
-    { id: 12, title: 'Робот-медведь', rating: 5.0, image: imageRobear },
-];
+interface NotificationItem {
+    id: number;
+    message: string;
+    type: 'success' | 'error';
+}
 
 const HomePage: React.FC = () => {
+    const [popularProducts, setPopularProducts] = useState<ProductDto[]>([]);
+    const [newProducts, setNewProducts] = useState<ProductDto[]>([]);
+    const [discountedProducts, setDiscountedProducts] = useState<ProductDto[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+    const addNotification = (message: string, type: 'success' | 'error') => {
+        const id = Date.now();
+        setNotifications(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeNotification = (id: number) => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+    };
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                // Fetch popular products (sorted by rating)
+                const popularResponse = await axios.get<{ items: ProductDto[], total: number }>(
+                    `${process.env.REACT_APP_API_URL}/products`,
+                    {
+                        params: {
+                            sort: 'averageRating',
+                            order: 'DESC',
+                            page: 1,
+                            take: 12
+                        }
+                    }
+                );
+                setPopularProducts(popularResponse.data.items);
+
+                // Fetch new products (sorted by creation date)
+                const newResponse = await axios.get<{ items: ProductDto[], total: number }>(
+                    `${process.env.REACT_APP_API_URL}/products`,
+                    {
+                        params: {
+                            sort: 'productId',
+                            order: 'DESC',
+                            page: 1,
+                            take: 12
+                        }
+                    }
+                );
+                setNewProducts(newResponse.data.items);
+
+                // Fetch discounted products (you might need to add a discount field to your Product entity)
+                const discountResponse = await axios.get<{ items: ProductDto[], total: number }>(
+                    `${process.env.REACT_APP_API_URL}/products`,
+                    {
+                        params: {
+                            // hasDiscount: true,
+                            page: 1,
+                            take: 12
+                        }
+                    }
+                );
+                setDiscountedProducts(discountResponse.data.items);
+
+            } catch (error) {
+                addNotification('Failed to fetch products.', 'error');
+                console.error('Error fetching products:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    if (isLoading) {
+        return <div className="loading">Loading...</div>;
+    }
+
     return (
         <>
             <ParallaxBackground
@@ -34,8 +96,8 @@ const HomePage: React.FC = () => {
             />
             <Haiku theme="ПОПУЛЯРНОЕ" />
             <div className="mt-5 content">
-                <ProductsCarousel products={mockProducts} />
-                <CatalogButton position={"end"} text={"К товарам"}/>
+                <ProductsCarousel products={popularProducts} />
+                <CatalogButton position="end" text="К товарам"/>
             </div>
 
             <ParallaxBackground
@@ -44,8 +106,8 @@ const HomePage: React.FC = () => {
             />
             <Haiku theme="НОВОЕ" />
             <div className="mt-5 content">
-                <ProductsCarousel products={mockProducts} />
-                <CatalogButton position={"start"} text={"Смотреть"}/>
+                <ProductsCarousel products={newProducts} />
+                <CatalogButton position="start" text="Смотреть"/>
             </div>
 
             <ParallaxBackground
@@ -54,8 +116,19 @@ const HomePage: React.FC = () => {
             />
             <Haiku theme="АКЦИЯ" />
             <div className="mt-5 content">
-                <ProductsCarousel products={mockProducts} />
-                <CatalogButton position={"center"} text={"Все товары"}/>
+                <ProductsCarousel products={discountedProducts} />
+                <CatalogButton position="center" text="Все товары"/>
+            </div>
+
+            <div className="notifications-container">
+                {notifications.map((n) => (
+                    <Notification
+                        key={n.id}
+                        message={n.message}
+                        type={n.type}
+                        onClose={() => removeNotification(n.id)}
+                    />
+                ))}
             </div>
         </>
     );

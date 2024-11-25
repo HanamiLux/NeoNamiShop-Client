@@ -193,10 +193,9 @@ textarea.form-input {
     border-color: var(--highlight-color);
 }
 
-.role-select option {
+option {
     background: var(--background-color);
     color: var(--text-color);
-
 }
 
 .role-select:hover {

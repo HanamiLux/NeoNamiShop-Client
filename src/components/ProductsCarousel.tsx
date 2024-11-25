@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ProductCard from './ProductCard';
 import '../styles/carousel.css';
+import { ProductDto } from "../models/Product";
 
 interface ProductsCarouselProps {
-    products: Array<{ id: number, title: string; rating: number; image: string }>;
+    products: ProductDto[];
 }
 
 const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
@@ -15,7 +16,10 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
 
     const updateVisibleProducts = useCallback((centerIndex: number) => {
         const indices = [];
-        for (let i = -2; i <= 2; i++) {
+        const totalVisible = Math.min(5, products.length); // Максимум 5 видимых товаров
+        const halfVisible = Math.floor(totalVisible / 2);
+
+        for (let i = -halfVisible; i <= halfVisible; i++) {
             const index = (centerIndex + i + products.length) % products.length;
             indices.push(index);
         }
@@ -33,6 +37,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
         setCurrentIndex(newIndex);
         updateVisibleProducts(newIndex);
 
+        // Убираем класс transitioning после завершения анимации
         setTimeout(() => {
             setIsTransitioning(false);
         }, 300);
@@ -78,14 +83,13 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
     }, []);
 
     const getItemClass = (index: number) => {
-        const position = index - 2;
+        const position = index - Math.floor(visibleProducts.length / 2);
         const classes = ['carousel-item'];
-
         if (isTransitioning) classes.push('transitioning');
         if (position === 0) classes.push('active');
-        if (position === -2) classes.push('far-left');
         if (position === -1) classes.push('left');
         if (position === 1) classes.push('right');
+        if (position === -2) classes.push('far-left');
         if (position === 2) classes.push('far-right');
 
         return classes.join(' ');
@@ -107,14 +111,14 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
                 <div className="carousel-container content">
                     {visibleProducts.map((productIndex, index) => (
                         <div
-                            key={`${productIndex}-${products[productIndex].title}`}
+                            key={`${products[productIndex].productId}-${index}`}
                             className={getItemClass(index)}
                         >
                             <ProductCard
-                                id={products[productIndex].id}
-                                title={products[productIndex].title}
-                                rating={products[productIndex].rating}
-                                image={products[productIndex].image}
+                                id={products[productIndex].productId}
+                                title={products[productIndex].productName}
+                                rating={products[productIndex].averageRating}
+                                image={products[productIndex]?.imagesUrl?.[0] || 'assets/images/no_image.webp'}
                             />
                         </div>
                     ))}

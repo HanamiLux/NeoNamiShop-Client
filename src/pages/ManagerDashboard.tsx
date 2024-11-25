@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { UserService } from '../services/userService';
-import { UserDto } from '../types/user';
 import axios from 'axios';
 import {
     ChevronDown,
@@ -18,34 +16,9 @@ import {
 } from 'lucide-react';
 import "../styles/manager-dashboard.css";
 import { UserUtils } from "../utils/UserUtils";
-
-// Добавляем интерфейсы для новых типов данных
-interface Product {
-    productId: number;
-    productName: string;
-    description: string;
-    price: number;
-    quantity: number;
-    categoryId: number;
-    averageRating: number;
-    totalFeedbacks: number;
-    imagesUrl?: string[];
-}
-
-interface Category {
-    categoryId: number;
-    categoryName: string;
-    description: string;
-}
-
-interface Order {
-    orderId: number;
-    userId: string;
-    userName: string;
-    status: 'new' | 'processing' | 'completed' | 'cancelled';
-    totalAmount: number;
-    createdAt: string;
-}
+import { Order } from "../models/Order";
+import { ProductDto } from "../models/Product";
+import { CategoryDto } from "../models/Category";
 
 const ManagerDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders' | 'users' | 'reviews' | 'roles'>('products');
@@ -53,24 +26,32 @@ const ManagerDashboard: React.FC = () => {
     const [isAddingRole, setIsAddingRole] = useState(false);
     const [newRole, setNewRole] = useState({ roleName: '', description: '' });
     const [error, setError] = useState('');
-    const [users, setUsers] = useState<UserDto[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
     const [totalUsers, setTotalUsers] = useState(0);
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [isLoading, setIsLoading] = useState(false);
     const userId = UserUtils.getUserId();
 
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<ProductDto[]>([]);
     const [totalProducts, setTotalProducts] = useState(0);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CategoryDto[]>([]);
     const [totalCategories, setTotalCategories] = useState(0);
     const [orders, setOrders] = useState<Order[]>([]);
     const [totalOrders, setTotalOrders] = useState(0);
 
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [isAddingCategory, setIsAddingCategory] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [editingProduct, setEditingProduct] = useState<{
+        productId?: number;
+        productName: string;
+        description: string;
+        price: number;
+        quantity: number;
+        categoryId: number;
+        imagesUrl: File[];
+    } | null>(null);
+    const [editingCategory, setEditingCategory] = useState<CategoryDto | null>(null);
     const [editingUser, setEditingUser] = useState<string | null>(null);
 
     const toggleEditingUser = (userId: string) => {
@@ -84,7 +65,7 @@ const ManagerDashboard: React.FC = () => {
         price: 0,
         quantity: 0,
         categoryId: 0,
-        imagesUrl: []
+        imagesUrl: [] as File[]
     });
     const [newCategory, setNewCategory] = useState({
         categoryName: '',
@@ -106,10 +87,11 @@ const ManagerDashboard: React.FC = () => {
     const fetchProducts = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/products`, {
+            const response = await axios.get<{ items: ProductDto[], total: number }>(`${process.env.REACT_APP_API_URL}/products`, {
                 params: { page, take: limit }
             });
             setProducts(response.data.items);
+            await fetchCategories();
             setTotalProducts(response.data.total);
         } catch (err) {
             setError('Failed to fetch products');
@@ -120,32 +102,106 @@ const ManagerDashboard: React.FC = () => {
 
     const handleAddProduct = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Создаем объект с JSON данными продукта
+        const productData = {
+            productName: newProduct.productName,
+            description: newProduct.description,
+            price: newProduct.price,
+            quantity: newProduct.quantity,
+            categoryId: newProduct.categoryId,
+        };
+
+        const formData = new FormData();
+        formData.append('product', JSON.stringify(productData));
+
+        if (newProduct.imagesUrl.length > 0) {
+            newProduct.imagesUrl.forEach((file) => {
+                formData.append('images', file);
+            });
+        }
+
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/products`, newProduct, {
-                params: { userId }
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/products`, formData, {
+                params: { userId },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
-            setIsAddingProduct(false);
-            setNewProduct({
-                productName: '',
-                description: '',
-                price: 0,
-                quantity: 0,
-                categoryId: 0,
-                imagesUrl: []
-            });
-            await fetchProducts();
+
+            if (response.status === 201) {
+                setIsAddingProduct(false);
+                setNewProduct({
+                    productName: '',
+                    description: '',
+                    price: 0,
+                    quantity: 0,
+                    categoryId: 0,
+                    imagesUrl: [],
+                });
+                await fetchProducts();
+            } else {
+                setError('Failed to create product');
+            }
         } catch (err) {
             setError('Failed to create product');
         }
     };
 
-    const handleUpdateProduct = async (productId: number, data: Partial<Product>) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files) {
+            if (editingProduct) {
+                setEditingProduct({
+                    ...editingProduct,
+                    imagesUrl: [...editingProduct.imagesUrl, ...Array.from(files)]
+                });
+            } else {
+                setNewProduct({
+                    ...newProduct,
+                    imagesUrl: [...newProduct.imagesUrl, ...Array.from(files)]
+                });
+            }
+        }
+    };
+
+    const handleUpdateProduct = async (productId: number) => {
         try {
-            await axios.put(`${process.env.REACT_APP_API_URL}/products/${productId}`, data, {
-                params: { userId }
+            // Создаем объект с JSON данными продукта
+            const productData = {
+                productName: editingProduct?.productName,
+                description: editingProduct?.description,
+                price: editingProduct?.price,
+                quantity: editingProduct?.quantity,
+                categoryId: editingProduct?.categoryId,
+            };
+
+
+            // Создаем FormData
+            const formData = new FormData();
+            formData.append('product', JSON.stringify(productData));
+
+            // Если есть новые изображения, добавляем их в FormData
+            if (editingProduct?.imagesUrl && editingProduct?.imagesUrl.length >= 0) {
+                editingProduct.imagesUrl.forEach((file) => {
+                    formData.append('images', file);  // Добавляем изображение
+                });
+            }
+
+            // Отправляем запрос на обновление
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/products/${productId}`, formData, {
+                params: { userId },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
-            setEditingProduct(null);
-            await fetchProducts();
+
+            if (response.status === 200) {
+                setEditingProduct(null);  // Закрываем режим редактирования
+                await fetchProducts();    // Обновляем список продуктов
+            } else {
+                setError('Failed to update product');
+            }
         } catch (err) {
             setError('Failed to update product');
         }
@@ -169,7 +225,7 @@ const ManagerDashboard: React.FC = () => {
     const fetchCategories = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/categories`, {
+            const response = await axios.get<{ items: CategoryDto[], total: number }>(`${process.env.REACT_APP_API_URL}/categories`, {
                 params: { page, take: limit }
             });
             setCategories(response.data.items);
@@ -195,9 +251,8 @@ const ManagerDashboard: React.FC = () => {
         }
     };
 
-    const handleUpdateCategory = async (categoryId: number, data: Partial<Category>) => {
+    const handleUpdateCategory = async (categoryId: number, data: Partial<CategoryDto>) => {
         try {
-            console.log('Updating category with data:', data);
             await axios.put(`${process.env.REACT_APP_API_URL}/categories/${categoryId}`, data, {
                 params: { userId }
             });
@@ -226,8 +281,8 @@ const ManagerDashboard: React.FC = () => {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {
-                params: { page, limit }
+            const response = await axios.get<{ items: Order[], total: number }>(`${process.env.REACT_APP_API_URL}/orders`, {
+                params: { page, take: limit }
             });
             setOrders(response.data.items);
             setTotalOrders(response.data.total);
@@ -255,7 +310,7 @@ const ManagerDashboard: React.FC = () => {
 
     const fetchRoles = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/roles`);
+            const response = await axios.get<{ items: any[], total: number }>(`${process.env.REACT_APP_API_URL}/roles`);
             setRoles(response.data.items);
         } catch (err) {
             setError('Failed to fetch roles');
@@ -285,7 +340,7 @@ const ManagerDashboard: React.FC = () => {
             }
 
             await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, { roleId: role.roleId }, {
-                params: { userId: UserUtils.getUserId() }
+                params: { userId: userId }
             });
 
             // Обновляем состояние пользователей
@@ -309,9 +364,11 @@ const ManagerDashboard: React.FC = () => {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            const response = await UserService.getUsers(page, limit);
-            setUsers(response.items);
-            setTotalUsers(response.total);
+            const response = await axios.get<{ items: any[], total: number }>(`${process.env.REACT_APP_API_URL}/users`, {
+                params: { page, take: limit }
+            });
+            setUsers(response.data.items);
+            setTotalUsers(response.data.total);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch users');
         } finally {
@@ -329,7 +386,9 @@ const ManagerDashboard: React.FC = () => {
         }
 
         try {
-            await UserService.deleteUser(userId, UserUtils.getUserId() ?? '');
+            await axios.delete(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
+                params: { userId: UserUtils.getUserId() ?? '' }
+            });
             await fetchUsers();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to delete user');
@@ -368,40 +427,50 @@ const ManagerDashboard: React.FC = () => {
                                     <th>Цена</th>
                                     <th>Количество</th>
                                     <th>Рейтинг</th>
+                                    <th>Изображения</th>
                                     <th>Действия</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {products && products.length > 0 ? (
-                                    products.map((product) => (
-                                        <tr key={product.productId}>
-                                            <td>{product.productId}</td>
-                                            <td>{product.productName}</td>
-                                            <td>{categories.find(c => c.categoryId === product.categoryId)?.categoryName}</td>
-                                            <td>{product.price} ₽</td>
-                                            <td>{product.quantity}</td>
-                                            <td>{product.averageRating.toFixed(1)} ({product.totalFeedbacks})</td>
-                                            <td>
-                                                <div className="action-buttons">
-                                                    <button
-                                                        className="action-edit"
-                                                        onClick={() => setEditingProduct(product)}
-                                                    >
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    <button
-                                                        className="action-delete"
-                                                        onClick={() => handleDeleteProduct(product.productId)}
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <></>
-                                )}
+                                {products.map((product) => (
+                                    <tr key={product.productId}>
+                                        <td>{product.productId}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.category ? product.category.categoryName : 'Без категории'}</td>
+                                        <td>{product.price} ₽</td>
+                                        <td>{product.quantity}</td>
+                                        <td>{product.averageRating.toFixed(1)} ({product.totalFeedbacks})</td>
+                                        <td>
+                                            {product?.imagesUrl?.map((imageUrl, index) => (
+                                                <img key={index} src={imageUrl} alt={product.productName} style={{ width: '50px', margin: '5px' }} />
+                                            ))}
+                                        </td>
+                                        <td>
+                                            <div className="action-buttons">
+                                                <button
+                                                    className="action-edit"
+                                                    onClick={() => setEditingProduct({
+                                                        productId: product.productId,
+                                                        productName: product.productName,
+                                                        description: product.description,
+                                                        price: product.price,
+                                                        quantity: product.quantity,
+                                                        categoryId: product.category.categoryId,
+                                                        imagesUrl: []
+                                                    })}
+                                                >
+                                                    <Edit size={16} />
+                                                </button>
+                                                <button
+                                                    className="action-delete"
+                                                    onClick={() => handleDeleteProduct(product.productId)}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                                 </tbody>
                             </table>
                         </div>
@@ -413,7 +482,7 @@ const ManagerDashboard: React.FC = () => {
                             >
                                 <ChevronLeft size={16} />
                             </button>
-                            <span>Страница {page} из {totalPages}</span>
+                            <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalProducts}
@@ -452,7 +521,7 @@ const ManagerDashboard: React.FC = () => {
                             <form onSubmit={editingProduct ?
                                 (e) => {
                                     e.preventDefault();
-                                    handleUpdateProduct(editingProduct.productId, newProduct);
+                                    handleUpdateProduct(editingProduct.productId!);
                                 } :
                                 handleAddProduct
                             }>
@@ -515,8 +584,7 @@ const ManagerDashboard: React.FC = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>
-                                        Количество:</label>
+                                    <label>Количество:</label>
                                     <input
                                         type="number"
                                         value={editingProduct ? editingProduct.quantity : newProduct.quantity}
@@ -528,6 +596,47 @@ const ManagerDashboard: React.FC = () => {
                                         min="0"
                                         className="form-input"
                                     />
+                                </div>
+                                <div className="form-group">
+                                    <label>Изображения:</label>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="form-input"
+                                    />
+                                    {/* Предпросмотр изображений */}
+                                    <div className="image-previews">
+                                        {(editingProduct ? editingProduct.imagesUrl : newProduct.imagesUrl).map((file, index) => (
+                                            <div key={index} className="image-preview">
+                                                <img
+                                                    src={URL.createObjectURL(file)}
+                                                    alt={`preview-${index}`}
+                                                    style={{ width: '50px', padding: '5px' }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="remove-image-button"
+                                                    onClick={() => {
+                                                        if (editingProduct) {
+                                                            setEditingProduct({
+                                                                ...editingProduct,
+                                                                imagesUrl: editingProduct.imagesUrl.filter((_, i) => i !== index)
+                                                            });
+                                                        } else {
+                                                            setNewProduct({
+                                                                ...newProduct,
+                                                                imagesUrl: newProduct.imagesUrl.filter((_, i) => i !== index)
+                                                            });
+                                                        }
+                                                    }}
+                                                >
+                                                    Удалить
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="form-actions">
                                     <button type="submit" className="submit-button">
@@ -606,7 +715,7 @@ const ManagerDashboard: React.FC = () => {
                             >
                                 <ChevronLeft size={16} />
                             </button>
-                            <span>Страница {page} из {totalPages}</span>
+                            <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalCategories}
@@ -726,7 +835,7 @@ const ManagerDashboard: React.FC = () => {
                             {orders.map((order) => (
                                 <tr key={order.orderId}>
                                     <td>{order.orderId}</td>
-                                    <td>{order.userName}</td>
+                                    <td>{order.userId}</td>
                                     <td>
                                         <select
                                             value={order.status}
@@ -739,12 +848,12 @@ const ManagerDashboard: React.FC = () => {
                                             <option value="cancelled">Отменен</option>
                                         </select>
                                     </td>
-                                    <td>{order.totalAmount} ₽</td>
-                                    <td>{new Date(order.createdAt).toLocaleString()}</td>
+                                    <td>{order.total} ₽</td>
+                                    <td>{new Date(order.date).toLocaleString()}</td>
                                     <td>
                                         <div className="action-buttons">
                                             <button className="action-view">
-                                                <Eye size={16} />
+                                                <Eye size={16}/>
                                             </button>
                                         </div>
                                     </td>
@@ -757,14 +866,14 @@ const ManagerDashboard: React.FC = () => {
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
                             >
-                                <ChevronLeft size={16} />
+                                <ChevronLeft size={16}/>
                             </button>
-                            <span>Страница {page} из {totalPages}</span>
+                            <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalOrders}
                             >
-                                <ChevronRight size={16} />
+                                <ChevronRight size={16}/>
                             </button>
                         </div>
                     </div>
@@ -843,7 +952,7 @@ const ManagerDashboard: React.FC = () => {
                             >
                                 <ChevronLeft size={16} />
                             </button>
-                            <span>Страница {page} из {totalPages}</span>
+                            <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalUsers}

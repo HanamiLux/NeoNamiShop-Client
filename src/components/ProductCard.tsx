@@ -12,7 +12,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ id, title, rating, image }) => {
     return (
-        <Link to={`/product/${id}`}>
+        <Link to={`/product/${id}`} key={id}>
             <div className="product-card">
                 <div className="product-image-container">
                     <img src={image} alt={title} className="product-image" />

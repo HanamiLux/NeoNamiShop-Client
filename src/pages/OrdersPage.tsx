@@ -1,69 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ParallaxBackground from "../components/ParallaxBackground";
 import { Order } from "../models/Order";
 import "../styles/user-profile.css";
 import "../styles/order.css";
+import axios from "axios";
 
 const OrdersPage: React.FC = () => {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [user, setUser] = useState<{ name: string; email: string; avatar: string }>({
+        name: "",
+        email: "",
+        avatar: ""
+    });
 
-    const orders: Order[] = [
-        {
-            orderId: 1,
-            userId: "user123",
-            date: new Date("2024-03-15"),
-            address: "г. Москва, ул. Примерная, д. 1",
-            status: "Доставлен",
-            items: [
-                {
-                    productId: 1,
-                    name: "Учебник みんなの日本語",
-                    price: 2500,
-                    image: "/assets/images/books.jpg",
-                    quantity: 2
-                },
-                {
-                    productId: 2,
-                    name: "Моти",
-                    price: 800,
-                    image: "/assets/images/mochi.jpg",
-                    quantity: 1
-                }
-            ],
-            total: 5800
-        },
-        {
-            orderId: 2,
-            userId: "user456",
-            date: new Date("2024-03-10"),
-            address: "г. Санкт-Петербург, ул. Примерная, д. 5",
-            status: "В обработке",
-            items: [
-                {
-                    productId: 3,
-                    name: "Робот-медведь",
-                    price: 10000,
-                    image: "/assets/images/robear.jfif",
-                    quantity: 1
-                }
-            ],
-            total: 10000
-        }
-    ];
+    useEffect(() => {
+        // Замените URL на ваш реальный API URL
+        const apiUrl = `${process.env.REACT_APP_API_URL}/orders`;
 
-    // Пример данных пользователя
-    const user = {
-        name: "Иван Иванов",
-        email: "ivan.ivanov@example.com",
-        avatar: "/assets/images/dakimakura.jpg"
-    };
+        axios.get(apiUrl).then((response) => {
+            setOrders(response.data.items);
+        }).catch((error) => {
+            console.error("Error fetching orders:", error);
+        });
+
+        // Пример данных пользователя
+        setUser({
+            name: "Иван Иванов",
+            email: "ivan.ivanov@example.com",
+            avatar: "/assets/images/dakimakura.jpg"
+        });
+    }, []);
 
     const getStatusColor = (status: string): string => {
         switch (status.toLowerCase()) {
-            case 'доставлен':
+            case 'completed':
                 return '#4CAF50';
-            case 'в обработке':
+            case 'processing':
                 return '#FFC107';
-            case 'отменён':
+            case 'cancelled':
                 return '#8b0000';
             default:
                 return 'white';
