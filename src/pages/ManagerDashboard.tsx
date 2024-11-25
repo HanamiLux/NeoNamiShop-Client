@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {
     ChevronDown,
@@ -15,16 +15,16 @@ import {
     ChevronRight
 } from 'lucide-react';
 import "../styles/manager-dashboard.css";
-import { UserUtils } from "../utils/UserUtils";
-import { Order } from "../models/Order";
-import { ProductDto } from "../models/Product";
-import { CategoryDto } from "../models/Category";
+import {UserUtils} from "../utils/UserUtils";
+import {Order} from "../models/Order";
+import {ProductDto} from "../models/Product";
+import {CategoryDto} from "../models/Category";
 
 const ManagerDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders' | 'users' | 'reviews' | 'roles'>('products');
     const [roles, setRoles] = useState<any[]>([]);
     const [isAddingRole, setIsAddingRole] = useState(false);
-    const [newRole, setNewRole] = useState({ roleName: '', description: '' });
+    const [newRole, setNewRole] = useState({roleName: '', description: ''});
     const [error, setError] = useState('');
     const [users, setUsers] = useState<any[]>([]);
     const [totalUsers, setTotalUsers] = useState(0);
@@ -87,8 +87,11 @@ const ManagerDashboard: React.FC = () => {
     const fetchProducts = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get<{ items: ProductDto[], total: number }>(`${process.env.REACT_APP_API_URL}/products`, {
-                params: { page, take: limit }
+            const response = await axios.get<{
+                items: ProductDto[],
+                total: number
+            }>(`${process.env.REACT_APP_API_URL}/products`, {
+                params: {page, take: limit}
             });
             setProducts(response.data.items);
             await fetchCategories();
@@ -123,7 +126,7 @@ const ManagerDashboard: React.FC = () => {
 
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/products`, formData, {
-                params: { userId },
+                params: {userId},
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -190,7 +193,7 @@ const ManagerDashboard: React.FC = () => {
 
             // Отправляем запрос на обновление
             const response = await axios.put(`${process.env.REACT_APP_API_URL}/products/${productId}`, formData, {
-                params: { userId },
+                params: {userId},
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -213,7 +216,7 @@ const ManagerDashboard: React.FC = () => {
         }
         try {
             await axios.delete(`${process.env.REACT_APP_API_URL}/products/${productId}`, {
-                params: { userId }
+                params: {userId}
             });
             await fetchProducts();
         } catch (err) {
@@ -225,8 +228,11 @@ const ManagerDashboard: React.FC = () => {
     const fetchCategories = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get<{ items: CategoryDto[], total: number }>(`${process.env.REACT_APP_API_URL}/categories`, {
-                params: { page, take: limit }
+            const response = await axios.get<{
+                items: CategoryDto[],
+                total: number
+            }>(`${process.env.REACT_APP_API_URL}/categories`, {
+                params: {page, take: limit}
             });
             setCategories(response.data.items);
             setTotalCategories(response.data.total);
@@ -241,10 +247,10 @@ const ManagerDashboard: React.FC = () => {
         e.preventDefault();
         try {
             await axios.post(`${process.env.REACT_APP_API_URL}/categories`, newCategory, {
-                params: { userId }
+                params: {userId}
             });
             setIsAddingCategory(false);
-            setNewCategory({ categoryName: '', description: '' });
+            setNewCategory({categoryName: '', description: ''});
             await fetchCategories();
         } catch (err) {
             setError('Failed to create category');
@@ -254,7 +260,7 @@ const ManagerDashboard: React.FC = () => {
     const handleUpdateCategory = async (categoryId: number, data: Partial<CategoryDto>) => {
         try {
             await axios.put(`${process.env.REACT_APP_API_URL}/categories/${categoryId}`, data, {
-                params: { userId }
+                params: {userId}
             });
             setEditingCategory(null);
             await fetchCategories();
@@ -269,7 +275,7 @@ const ManagerDashboard: React.FC = () => {
         }
         try {
             await axios.delete(`${process.env.REACT_APP_API_URL}/categories/${categoryId}`, {
-                params: { userId }
+                params: {userId}
             });
             await fetchCategories();
         } catch (err) {
@@ -281,8 +287,11 @@ const ManagerDashboard: React.FC = () => {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get<{ items: Order[], total: number }>(`${process.env.REACT_APP_API_URL}/orders`, {
-                params: { page, take: limit }
+            const response = await axios.get<{
+                items: Order[],
+                total: number
+            }>(`${process.env.REACT_APP_API_URL}/orders`, {
+                params: {page, take: limit}
             });
             setOrders(response.data.items);
             setTotalOrders(response.data.total);
@@ -321,8 +330,8 @@ const ManagerDashboard: React.FC = () => {
     const handleAddRole = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/roles`, newRole, { params: { userId: userId } });
-            setNewRole({ roleName: '', description: '' });
+            await axios.post(`${process.env.REACT_APP_API_URL}/roles`, newRole, {params: {userId: userId}});
+            setNewRole({roleName: '', description: ''});
             setIsAddingRole(false);
             await fetchRoles();
         } catch (err) {
@@ -339,12 +348,12 @@ const ManagerDashboard: React.FC = () => {
                 return;
             }
 
-            await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, { roleId: role.roleId }, {
-                params: { userId: userId }
+            await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, {roleId: role.roleId}, {
+                params: {userId: userId}
             });
 
             // Обновляем состояние пользователей
-            setUsers(users.map(user => user.userId === userId ? { ...user, roleName } : user));
+            setUsers(users.map(user => user.userId === userId ? {...user, roleName} : user));
             setEditingUser(null); // Сбрасываем режим редактирования
         } catch (err) {
             setError('Failed to update user role');
@@ -353,7 +362,7 @@ const ManagerDashboard: React.FC = () => {
 
     const handleDeleteRole = async (roleId: number) => {
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}/roles/${roleId}`, { params: { userId: userId } });
+            await axios.delete(`${process.env.REACT_APP_API_URL}/roles/${roleId}`, {params: {userId: userId}});
             await fetchRoles();
         } catch (err) {
             setError('Failed to delete role');
@@ -364,8 +373,11 @@ const ManagerDashboard: React.FC = () => {
     const fetchUsers = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get<{ items: any[], total: number }>(`${process.env.REACT_APP_API_URL}/users`, {
-                params: { page, take: limit }
+            const response = await axios.get<{
+                items: any[],
+                total: number
+            }>(`${process.env.REACT_APP_API_URL}/users`, {
+                params: {page, take: limit}
             });
             setUsers(response.data.items);
             setTotalUsers(response.data.total);
@@ -387,7 +399,7 @@ const ManagerDashboard: React.FC = () => {
 
         try {
             await axios.delete(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
-                params: { userId: UserUtils.getUserId() ?? '' }
+                params: {userId: UserUtils.getUserId() ?? ''}
             });
             await fetchUsers();
         } catch (err) {
@@ -398,8 +410,8 @@ const ManagerDashboard: React.FC = () => {
     const handleUpdateOrderStatus = async (orderId: number, status: Order['status']) => {
         try {
             await axios.put(`${process.env.REACT_APP_API_URL}/orders/${orderId}`,
-                { status },
-                { params: { userId } }
+                {status},
+                {params: {userId}}
             );
             await fetchOrders();
         } catch (err) {
@@ -442,7 +454,8 @@ const ManagerDashboard: React.FC = () => {
                                         <td>{product.averageRating.toFixed(1)} ({product.totalFeedbacks})</td>
                                         <td>
                                             {product?.imagesUrl?.map((imageUrl, index) => (
-                                                <img key={index} src={imageUrl} alt={product.productName} style={{ width: '50px', margin: '5px' }} />
+                                                <img key={index} src={imageUrl} alt={product.productName}
+                                                     style={{width: '50px', margin: '5px'}}/>
                                             ))}
                                         </td>
                                         <td>
@@ -459,13 +472,13 @@ const ManagerDashboard: React.FC = () => {
                                                         imagesUrl: []
                                                     })}
                                                 >
-                                                    <Edit size={16} />
+                                                    <Edit size={16}/>
                                                 </button>
                                                 <button
                                                     className="action-delete"
                                                     onClick={() => handleDeleteProduct(product.productId)}
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={16}/>
                                                 </button>
                                             </div>
                                         </td>
@@ -480,14 +493,14 @@ const ManagerDashboard: React.FC = () => {
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
                             >
-                                <ChevronLeft size={16} />
+                                <ChevronLeft size={16}/>
                             </button>
                             <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalProducts}
                             >
-                                <ChevronRight size={16} />
+                                <ChevronRight size={16}/>
                             </button>
                         </div>
                         <div className="manager-actions">
@@ -495,7 +508,7 @@ const ManagerDashboard: React.FC = () => {
                                 className="manager-action-button"
                                 onClick={() => setIsAddingProduct(true)}
                             >
-                                <PlusCircle size={18} />
+                                <PlusCircle size={18}/>
                                 Добавить товар
                             </button>
                         </div>
@@ -515,7 +528,7 @@ const ManagerDashboard: React.FC = () => {
                                         setEditingProduct(null);
                                     }}
                                 >
-                                    <X size={24} />
+                                    <X size={24}/>
                                 </button>
                             </div>
                             <form onSubmit={editingProduct ?
@@ -531,8 +544,8 @@ const ManagerDashboard: React.FC = () => {
                                         type="text"
                                         value={editingProduct ? editingProduct.productName : newProduct.productName}
                                         onChange={(e) => editingProduct ?
-                                            setEditingProduct({ ...editingProduct, productName: e.target.value }) :
-                                            setNewProduct({ ...newProduct, productName: e.target.value })
+                                            setEditingProduct({...editingProduct, productName: e.target.value}) :
+                                            setNewProduct({...newProduct, productName: e.target.value})
                                         }
                                         required
                                         className="form-input"
@@ -543,8 +556,8 @@ const ManagerDashboard: React.FC = () => {
                                     <textarea
                                         value={editingProduct ? editingProduct.description : newProduct.description}
                                         onChange={(e) => editingProduct ?
-                                            setEditingProduct({ ...editingProduct, description: e.target.value }) :
-                                            setNewProduct({ ...newProduct, description: e.target.value })
+                                            setEditingProduct({...editingProduct, description: e.target.value}) :
+                                            setNewProduct({...newProduct, description: e.target.value})
                                         }
                                         required
                                         className="form-input"
@@ -555,8 +568,8 @@ const ManagerDashboard: React.FC = () => {
                                     <select
                                         value={editingProduct ? editingProduct.categoryId : newProduct.categoryId}
                                         onChange={(e) => editingProduct ?
-                                            setEditingProduct({ ...editingProduct, categoryId: Number(e.target.value) }) :
-                                            setNewProduct({ ...newProduct, categoryId: Number(e.target.value) })
+                                            setEditingProduct({...editingProduct, categoryId: Number(e.target.value)}) :
+                                            setNewProduct({...newProduct, categoryId: Number(e.target.value)})
                                         }
                                         required
                                         className="form-input"
@@ -575,8 +588,8 @@ const ManagerDashboard: React.FC = () => {
                                         type="number"
                                         value={editingProduct ? editingProduct.price : newProduct.price}
                                         onChange={(e) => editingProduct ?
-                                            setEditingProduct({ ...editingProduct, price: Number(e.target.value) }) :
-                                            setNewProduct({ ...newProduct, price: Number(e.target.value) })
+                                            setEditingProduct({...editingProduct, price: Number(e.target.value)}) :
+                                            setNewProduct({...newProduct, price: Number(e.target.value)})
                                         }
                                         required
                                         min="0"
@@ -589,8 +602,8 @@ const ManagerDashboard: React.FC = () => {
                                         type="number"
                                         value={editingProduct ? editingProduct.quantity : newProduct.quantity}
                                         onChange={(e) => editingProduct ?
-                                            setEditingProduct({ ...editingProduct, quantity: Number(e.target.value) }) :
-                                            setNewProduct({ ...newProduct, quantity: Number(e.target.value) })
+                                            setEditingProduct({...editingProduct, quantity: Number(e.target.value)}) :
+                                            setNewProduct({...newProduct, quantity: Number(e.target.value)})
                                         }
                                         required
                                         min="0"
@@ -613,7 +626,7 @@ const ManagerDashboard: React.FC = () => {
                                                 <img
                                                     src={URL.createObjectURL(file)}
                                                     alt={`preview-${index}`}
-                                                    style={{ width: '50px', padding: '5px' }}
+                                                    style={{width: '50px', padding: '5px'}}
                                                 />
                                                 <button
                                                     type="button"
@@ -693,13 +706,13 @@ const ManagerDashboard: React.FC = () => {
                                                     className="action-edit"
                                                     onClick={() => setEditingCategory(category)}
                                                 >
-                                                    <Edit size={16} />
+                                                    <Edit size={16}/>
                                                 </button>
                                                 <button
                                                     className="action-delete"
                                                     onClick={() => handleDeleteCategory(category.categoryId)}
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={16}/>
                                                 </button>
                                             </div>
                                         </td>
@@ -713,14 +726,14 @@ const ManagerDashboard: React.FC = () => {
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
                             >
-                                <ChevronLeft size={16} />
+                                <ChevronLeft size={16}/>
                             </button>
                             <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalCategories}
                             >
-                                <ChevronRight size={16} />
+                                <ChevronRight size={16}/>
                             </button>
                         </div>
                         <div className="manager-actions">
@@ -728,7 +741,7 @@ const ManagerDashboard: React.FC = () => {
                                 className="manager-action-button"
                                 onClick={() => setIsAddingCategory(true)}
                             >
-                                <PlusCircle size={18} />
+                                <PlusCircle size={18}/>
                                 Добавить категорию
                             </button>
                         </div>
@@ -748,7 +761,7 @@ const ManagerDashboard: React.FC = () => {
                                         setEditingCategory(null);
                                     }}
                                 >
-                                    <X size={24} />
+                                    <X size={24}/>
                                 </button>
                             </div>
                             <form onSubmit={editingCategory ?
@@ -768,8 +781,8 @@ const ManagerDashboard: React.FC = () => {
                                         type="text"
                                         value={editingCategory ? editingCategory.categoryName : newCategory.categoryName}
                                         onChange={(e) => editingCategory ?
-                                            setEditingCategory({ ...editingCategory, categoryName: e.target.value }) :
-                                            setNewCategory({ ...newCategory, categoryName: e.target.value })
+                                            setEditingCategory({...editingCategory, categoryName: e.target.value}) :
+                                            setNewCategory({...newCategory, categoryName: e.target.value})
                                         }
                                         required
                                         className="form-input"
@@ -780,8 +793,8 @@ const ManagerDashboard: React.FC = () => {
                                     <textarea
                                         value={editingCategory ? editingCategory.description : newCategory.description}
                                         onChange={(e) => editingCategory ?
-                                            setEditingCategory({ ...editingCategory, description: e.target.value }) :
-                                            setNewCategory({ ...newCategory, description: e.target.value })
+                                            setEditingCategory({...editingCategory, description: e.target.value}) :
+                                            setNewCategory({...newCategory, description: e.target.value})
                                         }
                                         required
                                         className="form-input"
@@ -931,13 +944,13 @@ const ManagerDashboard: React.FC = () => {
                                                 className="action-edit"
                                                 onClick={() => toggleEditingUser(user.userId)}
                                             >
-                                                <UserCog size={16} />
+                                                <UserCog size={16}/>
                                             </button>
                                             <button
                                                 className="action-delete"
                                                 onClick={() => handleDeleteUser(user.userId)}
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={16}/>
                                             </button>
                                         </div>
                                     </td>
@@ -950,14 +963,14 @@ const ManagerDashboard: React.FC = () => {
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
                             >
-                                <ChevronLeft size={16} />
+                                <ChevronLeft size={16}/>
                             </button>
                             <span>Страница {page} из {totalPages || 1}</span>
                             <button
                                 onClick={() => setPage(p => p + 1)}
                                 disabled={page * limit >= totalUsers}
                             >
-                                <ChevronRight size={16} />
+                                <ChevronRight size={16}/>
                             </button>
                         </div>
                     </div>
@@ -988,8 +1001,8 @@ const ManagerDashboard: React.FC = () => {
                             <td>5/5</td>
                             <td>
                                 <div className="action-buttons">
-                                    <button className="action-view"><Eye size={16} /></button>
-                                    <button className="action-delete"><Trash2 size={16} /></button>
+                                    <button className="action-view"><Eye size={16}/></button>
+                                    <button className="action-delete"><Trash2 size={16}/></button>
                                 </div>
                             </td>
                         </tr>
@@ -1011,7 +1024,7 @@ const ManagerDashboard: React.FC = () => {
                             <input
                                 type="text"
                                 value={newRole.roleName}
-                                onChange={(e) => setNewRole({ ...newRole, roleName: e.target.value })}
+                                onChange={(e) => setNewRole({...newRole, roleName: e.target.value})}
                                 required
                                 className="form-input"
                                 minLength={2}
@@ -1022,7 +1035,7 @@ const ManagerDashboard: React.FC = () => {
                             <label>Описание:</label>
                             <textarea
                                 value={newRole.description}
-                                onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
+                                onChange={(e) => setNewRole({...newRole, description: e.target.value})}
                                 required
                                 className="form-input"
                             />
@@ -1063,7 +1076,7 @@ const ManagerDashboard: React.FC = () => {
                                                 className="action-delete"
                                                 onClick={() => handleDeleteRole(role.roleId)}
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={16}/>
                                             </button>
                                         </div>
                                     </td>
@@ -1077,7 +1090,7 @@ const ManagerDashboard: React.FC = () => {
                             className="manager-action-button"
                             onClick={() => setIsAddingRole(true)}
                         >
-                            <PlusCircle size={18} />
+                            <PlusCircle size={18}/>
                             Добавить роль
                         </button>
                     </div>
@@ -1095,42 +1108,42 @@ const ManagerDashboard: React.FC = () => {
                     className={`manager-tab ${activeTab === 'products' ? 'active' : ''}`}
                     onClick={() => setActiveTab('products')}
                 >
-                    <ShoppingCart size={18} />
+                    <ShoppingCart size={18}/>
                     Товары
                 </button>
                 <button
                     className={`manager-tab ${activeTab === 'categories' ? 'active' : ''}`}
                     onClick={() => setActiveTab('categories')}
                 >
-                    <ChevronDown size={18} />
+                    <ChevronDown size={18}/>
                     Категории
                 </button>
                 <button
                     className={`manager-tab ${activeTab === 'orders' ? 'active' : ''}`}
                     onClick={() => setActiveTab('orders')}
                 >
-                    <ShoppingCart size={18} />
+                    <ShoppingCart size={18}/>
                     Заказы
                 </button>
                 <button
                     className={`manager-tab ${activeTab === 'users' ? 'active' : ''}`}
                     onClick={() => setActiveTab('users')}
                 >
-                    <UserCog size={18} />
+                    <UserCog size={18}/>
                     Пользователи
                 </button>
                 <button
                     className={`manager-tab ${activeTab === 'reviews' ? 'active' : ''}`}
                     onClick={() => setActiveTab('reviews')}
                 >
-                    <MessageCircle size={18} />
+                    <MessageCircle size={18}/>
                     Отзывы
                 </button>
                 <button
                     className={`manager-tab ${activeTab === 'roles' ? 'active' : ''}`}
                     onClick={() => setActiveTab('roles')}
                 >
-                    <Shield size={18} />
+                    <Shield size={18}/>
                     Роли
                 </button>
             </div>
