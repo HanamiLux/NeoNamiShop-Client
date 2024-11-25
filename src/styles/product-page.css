@@ -73,9 +73,9 @@
 
 .gallery-image img {
     width: 100%;
-    height: 800px;
+    height: 600px;
     border-radius: 1rem;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 /* Product Details */

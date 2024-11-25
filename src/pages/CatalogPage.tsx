@@ -49,7 +49,7 @@ const CatalogPage: React.FC = () => {
         const matchesFilters = Object.entries(selectedFilters).every(([filter, isSelected]) => {
             if (!isSelected) return true;
             // Implement your filter logic here
-            // Example: if (filter === 'До 1000₽' && product.price <= 1000) return true;
+            // if (filter === 'До 1000₽' && product.price <= 1000) return true;
             return true;
         });
 
@@ -67,7 +67,7 @@ const CatalogPage: React.FC = () => {
     return (
         <>
             <ParallaxBackground title="ТОВАРЫ" image="/assets/images/catalog5.png" />
-            <div className="catalog-container">
+            <div className="catalog-container content">
                 <div className="catalog-header">
                     <div className="search-container">
                         <input
@@ -100,31 +100,31 @@ const CatalogPage: React.FC = () => {
                 </div>
 
                 <div className="catalog-content">
-                    <aside className="filters-sidebar">
-                        {Object.entries(filters).map(([section, options]) => (
-                            <div key={section} className="filter-section">
-                                <h3 className="filter-title">{section}</h3>
-                                <div className="filter-list">
-                                    {options.map((option) => (
-                                        <label key={option} className="filter-item">
-                                            <input
-                                                type="checkbox"
-                                                className="filter-checkbox"
-                                                checked={selectedFilters[option] || false}
-                                                onChange={() => {
-                                                    setSelectedFilters({
-                                                        ...selectedFilters,
-                                                        [option]: !selectedFilters[option]
-                                                    });
-                                                }}
-                                            />
-                                            {option}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </aside>
+                    {/*<aside className="filters-sidebar">*/}
+                    {/*    {Object.entries(filters).map(([section, options]) => (*/}
+                    {/*        <div key={section} className="filter-section">*/}
+                    {/*            <h3 className="filter-title">{section}</h3>*/}
+                    {/*            <div className="filter-list">*/}
+                    {/*                {options.map((option) => (*/}
+                    {/*                    <label key={option} className="filter-item">*/}
+                    {/*                        <input*/}
+                    {/*                            type="checkbox"*/}
+                    {/*                            className="filter-checkbox"*/}
+                    {/*                            checked={selectedFilters[option] || false}*/}
+                    {/*                            onChange={() => {*/}
+                    {/*                                setSelectedFilters({*/}
+                    {/*                                    ...selectedFilters,*/}
+                    {/*                                    [option]: !selectedFilters[option]*/}
+                    {/*                                });*/}
+                    {/*                            }}*/}
+                    {/*                        />*/}
+                    {/*                        {option}*/}
+                    {/*                    </label>*/}
+                    {/*                ))}*/}
+                    {/*            </div>*/}
+                    {/*        </div>*/}
+                    {/*    ))}*/}
+                    {/*</aside>*/}
 
                     <div className="products-grid">
                         {filteredProducts.map((product) => {

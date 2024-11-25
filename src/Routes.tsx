@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {Routes, Route, useLocation, Navigate} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import { Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CatalogPage from './pages/CatalogPage';
 import OrdersPage from './pages/OrdersPage';
@@ -7,7 +7,43 @@ import ProfilePage from './pages/ProfilePage';
 import AdminDashboard from './pages/AdminDashboard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import ProductPage from './pages/ProductPage';
+import axios from "axios";
+import {ProductDto} from "./models/Product";
 
+// Add a product fetching hook or service
+const useProductDetails = (productId: string) => {
+    const [product, setProduct] = useState<ProductDto | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                setIsLoading(true);
+                const response = await axios.get<ProductDto>(`${process.env.REACT_APP_API_URL}/products/${productId}`);
+                setProduct(response.data);
+            } catch (err) {
+                setError('Product not found');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProductDetails();
+    }, [productId]);
+
+    return { product, isLoading, error };
+};
+
+const ProductPageWrapper: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const { product, isLoading, error } = useProductDetails(id || '');
+
+    if (isLoading) return <div>Loading...</div>;
+    if (error || !product) return <Navigate to="/catalog" replace />;
+
+    return <ProductPage product={product} />;
+};
 
 interface AppRoutesProps {
     isAuthenticated: boolean;
@@ -17,10 +53,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
     const { pathname } = useLocation();
 
     useEffect(() => {
-        // Прокрутка с анимацией
         window.scrollTo({
             top: 0,
-            behavior: "smooth", // Плавная прокрутка
+            behavior: "smooth",
         });
     }, [pathname]);
 
@@ -28,9 +63,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/catalog" element={<CatalogPage />} />
-            <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/product/:id" element={<ProductPageWrapper />} />
 
-            {/* Защищенные маршруты */}
+            {/* Protected routes */}
             <Route
                 path="/profile"
                 element={isAuthenticated ? <ProfilePage /> : <Navigate to="/" replace />}
@@ -40,10 +75,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
                 element={isAuthenticated ? <OrdersPage /> : <Navigate to="/" replace />}
             />
 
-
             <Route path="/admin" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/" replace />} />
             <Route path="/manager" element={isAuthenticated ? <ManagerDashboard /> : <Navigate to="/" replace />} />
-
         </Routes>
     );
 };
