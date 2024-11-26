@@ -11,7 +11,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
     const [visibleProducts, setVisibleProducts] = useState<number[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const autoScrollRef = useRef<NodeJS.Timeout>();
+    const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
     const isMouseOver = useRef(false);
 
     const updateVisibleProducts = useCallback((centerIndex: number) => {
@@ -57,6 +57,8 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
 
     // Инициализация карусели
     useEffect(() => {
+        if (products.length === 0) return; // Handle empty products array
+
         updateVisibleProducts(currentIndex);
         startAutoScroll();
 
@@ -94,6 +96,10 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ products }) => {
 
         return classes.join(' ');
     };
+
+    if (products.length === 0) {
+        return <div>No products available</div>;
+    }
 
     return (
         <div className="products-carousel">
