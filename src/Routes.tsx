@@ -47,9 +47,10 @@ const ProductPageWrapper: React.FC = () => {
 
 interface AppRoutesProps {
     isAuthenticated: boolean;
+    userRole: 'manager' | 'dbadmin' | 'user' | null;
 }
 
-const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
+const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated, userRole }) => {
     const { pathname } = useLocation();
 
     useEffect(() => {
@@ -75,8 +76,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
                 element={isAuthenticated ? <OrdersPage /> : <Navigate to="/" replace />}
             />
 
-            <Route path="/admin" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/" replace />} />
-            <Route path="/manager" element={isAuthenticated ? <ManagerDashboard /> : <Navigate to="/" replace />} />
+            <Route path="/admin" element={isAuthenticated && userRole === 'dbadmin' ? <AdminDashboard /> : <Navigate to="/" replace />} />
+            <Route path="/manager" element={isAuthenticated && userRole === 'manager' ? <ManagerDashboard /> : <Navigate to="/" replace />} />
         </Routes>
     );
 };

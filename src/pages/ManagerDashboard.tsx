@@ -347,6 +347,10 @@ const ManagerDashboard: React.FC = () => {
                 setError('Role not found');
                 return;
             }
+            if (userId === UserUtils.getUserId()) {
+                setError('Нельзя изменить себе)');
+                return;
+            }
 
             await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, {roleId: role.roleId}, {
                 params: {userId: userId}

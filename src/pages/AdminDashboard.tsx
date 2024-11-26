@@ -13,6 +13,7 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 interface Log {
     logId: number;
@@ -37,6 +38,7 @@ const AdminDatabaseDashboard: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [backupFile, setBackupFile] = useState<File | null>(null);
     const itemsPerPage = 10;
 
     const fetchLogs = async (page: number) => {
@@ -71,6 +73,86 @@ const AdminDatabaseDashboard: React.FC = () => {
     const handlePageChange = (newPage: number) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
+        }
+    };
+
+    const handleCreateBackup = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/database/backup`, {
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const timestamp = new Date().toISOString().replace(/:/g, '-');
+            link.setAttribute('download', `database_backup_${timestamp}.sql`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            toast.success('Резервная копия базы данных создана');
+        } catch (error) {
+            console.error('Ошибка создания бэкапа:', error);
+            toast.error('Не удалось создать резервную копию');
+        }
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setBackupFile(file);
+        }
+    };
+
+    const handleExport = async (type: string) => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/database/export`, {
+                params: { type },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const timestamp = new Date().toISOString().replace(/:/g, '-');
+
+            // Специальная обработка для полной базы данных
+            if (type === 'full') {
+                link.setAttribute('download', `full_database_backup_${timestamp}.sql`);
+                handleCreateBackup(); // Вызов функции создания бэкапа одновременно
+            } else {
+                link.setAttribute('download', `export_${type}_${timestamp}.csv`);
+            }
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            toast.success(`Экспорт ${type === 'full' ? 'полной базы данных' : type} успешен`);
+        } catch (error) {
+            console.error('Error exporting data:', error);
+            toast.error(`Не удалось экспортировать ${type}`);
+        }
+    };
+
+    const handleImport = async (file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        console.log(file);
+
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/admin/database/restore`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            toast.success('Данные успешно импортированы');
+            console.log('Data imported successfully:', response.data);
+        } catch (error) {
+            console.error('Error importing data:', error);
+            toast.error('Не удалось импортировать данные');
         }
     };
 
@@ -157,19 +239,19 @@ const AdminDatabaseDashboard: React.FC = () => {
                     <div className="export-options">
                         <h3>Экспорт данных</h3>
                         <div className="export-grid">
-                            <button className="export-button">
+                            <button className="export-button" onClick={() => handleExport('users')}>
                                 <FileText size={24} />
                                 Экспорт пользователей
                             </button>
-                            <button className="export-button">
+                            <button className="export-button" onClick={() => handleExport('products')}>
                                 <Server size={24} />
                                 Экспорт товаров
                             </button>
-                            <button className="export-button">
+                            <button className="export-button" onClick={() => handleExport('orders')}>
                                 <BarChart size={24} />
                                 Экспорт заказов
                             </button>
-                            <button className="export-button">
+                            <button className="export-button" onClick={() => handleExport('full')}>
                                 <Database size={24} />
                                 Полной базы данных
                             </button>
@@ -181,6 +263,13 @@ const AdminDatabaseDashboard: React.FC = () => {
     };
 
     const renderDataImportTab = () => {
+        const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (file) {
+                handleImport(file);
+            }
+        };
+
         return (
             <div className="manager-tab-content">
                 <div className="data-import-container">
@@ -189,8 +278,19 @@ const AdminDatabaseDashboard: React.FC = () => {
                         <div className="file-upload-zone">
                             <Upload size={48} />
                             <p>Перетащите файл или выберите</p>
-                            <input type="file" className="file-input" />
+                            <input
+                                type="file"
+                                className="file-input"
+                                accept=".sql,.csv"
+                                onChange={handleFileChange}
+                            />
                         </div>
+                        {backupFile && (
+                            <div className="selected-file mt-4">
+                                <FileText className="mr-2" />
+                                {backupFile.name}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

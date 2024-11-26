@@ -69,7 +69,6 @@
 
 /* Тело модального окна */
 .modal-body {
-    max-height: 300px;
     overflow-y: auto;
     margin-bottom: 15px;
 }

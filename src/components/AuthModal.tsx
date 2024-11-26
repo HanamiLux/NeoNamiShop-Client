@@ -5,7 +5,7 @@ import '../styles/modal.css';
 interface AuthModalProps {
     show: boolean;
     onHide: () => void;
-    onLogin: (user: { userId: string; email: string; login: string }) => void;
+    onLogin: (user: { userId: string; email: string; login: string, roleName: 'manager' | 'dbadmin' | 'user' }) => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLogin }) => {
@@ -22,6 +22,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLogin }) => {
 
         try {
             const endpoint = isLogin ? 'login' : '';
+            console.log(email, password, name)
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/${endpoint}`, {
                 email,
                 password,
@@ -37,6 +38,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLogin }) => {
                 localStorage.setItem('userId', user.userId);
                 localStorage.setItem('email', user.email);
                 localStorage.setItem('login', user.login);
+                localStorage.setItem('role', user.role);
                 console.log('Вход выполнен:', response.data);
                 onLogin(user);
                 onHide();

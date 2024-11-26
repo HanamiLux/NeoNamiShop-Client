@@ -75,7 +75,6 @@
 }
 
 .form-group input {
-    width: 100%;
     padding: 1rem;
     font-size: 1rem;
     color: var(--text-color);

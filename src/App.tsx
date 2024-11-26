@@ -7,12 +7,12 @@ import AppRoutes from './Routes';
 import Footer from './components/Footer';
 import { CartProvider } from './components/CartProvider';
 import CartModal from './components/CartModal';
-import CartButton from "./components/CartButton";
 
 interface User {
     userId: string;
     email: string;
     login: string;
+    roleName: 'manager' | 'dbadmin' | 'user';
 }
 
 const App: React.FC = () => {
@@ -25,9 +25,10 @@ const App: React.FC = () => {
         const userId = localStorage.getItem('userId');
         const email = localStorage.getItem('email');
         const login = localStorage.getItem('login');
+        const role = localStorage.getItem('role') as 'manager' | 'dbadmin' | 'user';
 
-        if (userId && email && login) {
-            setUser({ userId, email, login });
+        if (userId && email && login && role) {
+            setUser({ userId, email, login, roleName: role });
         }
 
         setIsCheckingAuth(false);
@@ -37,6 +38,7 @@ const App: React.FC = () => {
         localStorage.setItem('userId', userData.userId);
         localStorage.setItem('email', userData.email);
         localStorage.setItem('login', userData.login);
+        localStorage.setItem('role', userData.roleName);
         setUser(userData);
         setShowAuthModal(false);
     };
@@ -46,6 +48,7 @@ const App: React.FC = () => {
         localStorage.removeItem('email');
         localStorage.removeItem('login');
         localStorage.removeItem('cart');
+        localStorage.removeItem('role');
         setUser(null);
     };
 
@@ -71,7 +74,7 @@ const App: React.FC = () => {
                     onLogin={handleLogin}
                 />
                 <Container>
-                    <AppRoutes isAuthenticated={!!user} />
+                    <AppRoutes isAuthenticated={!!user} userRole={user?.roleName || null} />
                 </Container>
                 <CartModal
                     isOpen={isCartOpen}

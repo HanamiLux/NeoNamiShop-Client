@@ -7,7 +7,7 @@ import { useCart } from "./CartProvider";
 interface NavigationBarProps {
     onShowAuthModal: () => void;
     onLogout: () => void;
-    user: { userId: string; email: string; login: string } | null;
+    user: { userId: string; email: string; login: string, roleName: 'manager' | 'dbadmin' | 'user' } | null;
     onShowCart: () => void; // Новый обработчик для открытия корзины
 }
 
@@ -62,29 +62,32 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onShowAuthModal, onLogout
                 {isAuthenticated && (
                     <>
                         <li><Link to="/profile">Профиль</Link></li>
-                        <li><Link to="/admin">Админ-панель</Link></li>
-                        <li><Link to="/manager">Менеджер-панель</Link></li>
-                    </>
-                )}
-
-                <li>
-                    <button className="cart-icon" onClick={onShowCart}>
-                        <ShoppingCart size={24} />
-                        {totalItems > 0 && (
-                            <span className="cart-badge">
+                        {user?.roleName === 'manager' && (
+                            <li><Link to="/manager">Менеджер-панель</Link></li>
+                        )}
+                        {user?.roleName === 'dbadmin' && (
+                            <li><Link to="/admin">Админ-панель</Link></li>
+                        )}
+                        <li>
+                            <button className="cart-icon" onClick={onShowCart}>
+                                <ShoppingCart size={24}/>
+                                {totalItems > 0 && (
+                                    <span className="cart-badge">
                                 {totalItems}
                             </span>
-                        )}
-                    </button>
-                </li>
+                                )}
+                            </button>
+                        </li>
+                    </>
+                )}
 
                 {isAuthenticated ? (
                     <li className="user-info">
                         <div className="user-icon">
-                            <User size={20} color="var(--text-color)" />
+                            <User size={20} color="var(--text-color)"/>
                         </div>
                         <span className="username">{user?.login}</span>
-                        <img src="/assets/images/footer-bg.jpg" alt="Profile" className="profile-picture" />
+                        <img src="/assets/images/footer-bg.jpg" alt="Profile" className="profile-picture"/>
                         <button className="btn-important" onClick={handleLogout}>Выйти</button>
                     </li>
                 ) : (
