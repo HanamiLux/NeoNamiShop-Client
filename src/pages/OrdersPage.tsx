@@ -63,8 +63,10 @@ const OrdersPage: React.FC = () => {
                 return "#FFC107";
             case "cancelled":
                 return "#8b0000";
-            case "new":
+            case "shipped":
                 return "#006b8b";
+            case "processing":
+                return "#b700ff";
             default:
                 return "white";
         }

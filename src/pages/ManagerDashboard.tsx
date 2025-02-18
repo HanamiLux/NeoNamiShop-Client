@@ -863,8 +863,9 @@ const ManagerDashboard: React.FC = () => {
                                             }
                                             className="status-select"
                                         >
-                                            <option value="new">Новый</option>
-                                            <option value="pending">В обработке</option>
+                                            <option value="pending">В ожидании</option>
+                                            <option value="processing">В обработке</option>
+                                            <option value="shipped">В пути</option>
                                             <option value="completed">Завершен</option>
                                             <option value="cancelled">Отменен</option>
                                         </select>
