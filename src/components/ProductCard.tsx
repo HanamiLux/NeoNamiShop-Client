@@ -6,7 +6,7 @@ import { Rating } from 'react-simple-star-rating';
 interface ProductCardProps {
     id: number;
     title: string;
-    rating: number;
+    rating: number | null | string;
     image: string;
 }
 
@@ -18,6 +18,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, title, rating, image }) =
         setImageError(true);
         setImgSrc('/assets/images/no_image.webp');
     };
+
+    const numericRating = typeof rating === 'string'
+        ? parseFloat(rating)
+        : Number(rating) || 0;
+    const ratingText = numericRating > 0
+        ? numericRating.toFixed(1)
+        : '0.0';
+
     return (
         <Link to={`/product/${id}`} key={id}>
             <div className="product-card">
@@ -29,14 +37,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, title, rating, image }) =
                 <div className="product-info">
                     <div className="product-rating">
                         <Rating
-                            initialValue={rating}
+                            initialValue={numericRating}
                             readonly
                             size={20}
                             fillColor="#8b0000"
                             emptyColor="#C0C0C0"
                             allowFraction
                         />
-                        <span className="ml-2">{rating.toFixed(1)}</span>
+                        <span className="ml-2">{ratingText}</span>
                     </div>
                 </div>
             </div>

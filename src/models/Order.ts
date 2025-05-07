@@ -5,6 +5,7 @@ export interface Order {
     address: string;
     status: 'pending' | 'processing' | 'shipped' | 'completed' | 'cancelled';
     products: {
+        productId: number;
         description: string;
         orderedProductId: number;
         quantity: number;

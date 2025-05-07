@@ -8,6 +8,7 @@ declare module 'react-simple-star-rating' {
         fillColor?: string;
         emptyColor?: string;
         allowFraction?: boolean;
+        onClick?: (value: number) => void;
     }
 
     export const Rating: React.FC<RatingProps>;

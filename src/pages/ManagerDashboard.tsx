@@ -19,6 +19,7 @@ import {UserUtils} from "../utils/UserUtils";
 import {Order} from "../models/Order";
 import {ProductDto} from "../models/Product";
 import {CategoryDto} from "../models/Category";
+import {FeedbackDto} from "../models/Feedback";
 
 const ManagerDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders' | 'users' | 'reviews' | 'roles'>('products');
@@ -39,6 +40,9 @@ const ManagerDashboard: React.FC = () => {
     const [totalCategories, setTotalCategories] = useState(0);
     const [orders, setOrders] = useState<Order[]>([]);
     const [totalOrders, setTotalOrders] = useState(0);
+
+    const [feedbacks, setFeedbacks] = useState<FeedbackDto[]>([]);
+    const [totalFeedbacks, setTotalFeedbacks] = useState(0);
 
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [isAddingCategory, setIsAddingCategory] = useState(false);
@@ -80,8 +84,48 @@ const ManagerDashboard: React.FC = () => {
             fetchCategories();
         } else if (activeTab === 'orders') {
             fetchOrders();
+        } else if (activeTab === 'reviews') {
+            fetchFeedbacks();
         }
     }, [activeTab, page]);
+
+    const getProcessedRating = (rating: string | number | null): string => {
+        if (rating === null || rating === undefined) return '0.0'
+        const numericRating = typeof rating === 'string'
+            ? parseFloat(rating)
+            : Number(rating)
+        return !isNaN(numericRating) ? numericRating.toFixed(1) : '0.0'
+    }
+
+    const fetchFeedbacks = async () => {
+        try {
+            setIsLoading(true);
+            const response = await axios.get<{
+                items: FeedbackDto[],
+                total: number
+            }>(`${process.env.REACT_APP_API_URL}/feedbacks`);
+            setFeedbacks(response.data.items);
+            setTotalFeedbacks(response.data.total);
+        } catch (err) {
+            setError('Не удалось загрузить отзывы');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteFeedback = async (feedbackId: number) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этот отзыв?')) {
+            return;
+        }
+        try {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/feedbacks/${feedbackId}`, {
+                params: { userId: UserUtils.getUserId() }
+            });
+            await fetchFeedbacks();
+        } catch (err) {
+            setError('Не удалось удалить отзыв');
+        }
+    };
 
     // Функции для работы с продуктами
     const fetchProducts = async () => {
@@ -93,7 +137,11 @@ const ManagerDashboard: React.FC = () => {
             }>(`${process.env.REACT_APP_API_URL}/products`, {
                 params: {page, take: limit}
             });
-            setProducts(response.data.items);
+            const processedProducts = response.data.items.map(product => ({
+                ...product,
+                averageRating: Number(product.averageRating) || 0
+            }));
+            setProducts(processedProducts);
             await fetchCategories();
             setTotalProducts(response.data.total);
         } catch (err) {
@@ -455,9 +503,12 @@ const ManagerDashboard: React.FC = () => {
                                         <td>{product.category ? product.category.categoryName : 'Без категории'}</td>
                                         <td>{product.price} ₽</td>
                                         <td>{product.quantity}</td>
-                                        <td>{product.averageRating.toFixed(1)} ({product.totalFeedbacks})</td>
                                         <td>
-                                            {product?.imagesUrl?.map((imageUrl, index) => (
+                                            {getProcessedRating(product.averageRating)}
+                                            ({product.totalFeedbacks})
+                                        </td>
+                                        <td>
+                                        {product?.imagesUrl?.map((imageUrl, index) => (
                                                 <img key={index} src={imageUrl} alt={product.productName}
                                                      style={{width: '50px', margin: '5px'}}/>
                                             ))}
@@ -1006,39 +1057,69 @@ const ManagerDashboard: React.FC = () => {
         );
     };
 
-    const renderReviewsTab = () => (
-        <div className="manager-tab-content">
-            <div className="manager-table-container">
-                <table className="manager-table">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Пользователь</th>
-                        <th>Товар</th>
-                        <th>Оценка</th>
-                        <th>Действия</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {[1, 2, 3].map((review) => (
-                        <tr key={review}>
-                            <td>{review}</td>
-                            <td>Имя Пользователя</td>
-                            <td>Название товара</td>
-                            <td>5/5</td>
-                            <td>
-                                <div className="action-buttons">
-                                    <button className="action-view"><Eye size={16}/></button>
-                                    <button className="action-delete"><Trash2 size={16}/></button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+    const renderReviewsTab = () => {
+        const totalPages = Math.ceil(totalFeedbacks / limit);
+
+        return (
+            <div className="manager-tab-content">
+                {error && <div className="error-message">{error}</div>}
+                {isLoading ? (
+                    <div className="loading-spinner">Загрузка...</div>
+                ) : (
+                    <div className="manager-table-container">
+                        <table className="manager-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Пользователь</th>
+                                <th>Товар</th>
+                                <th>Оценка</th>
+                                <th>Комментарий</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {feedbacks.map((feedback) => (
+                                <tr key={feedback.feedbackId}>
+                                    <td>{feedback.feedbackId}</td>
+                                    <td>{feedback.userId}</td>
+                                    <td>{feedback.productId}</td>
+                                    <td>{feedback.rate}/5</td>
+                                    <td className="comment-cell">{feedback.content}</td>
+                                    <td>{new Date(feedback.date).toLocaleDateString()}</td>
+                                    <td>
+                                        <div className="action-buttons">
+                                            <button className="action-delete"
+                                                    onClick={() => handleDeleteFeedback(feedback.feedbackId)}>
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                        <div className="pagination">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                            >
+                                <ChevronLeft size={16}/>
+                            </button>
+                            <span>Страница {page} из {totalPages || 1}</span>
+                            <button
+                                onClick={() => setPage(p => p + 1)}
+                                disabled={page * limit >= totalFeedbacks}
+                            >
+                                <ChevronRight size={16}/>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
-        </div>
-    );
+        );
+    };
 
     const renderRolesTab = () => (
         <div className="manager-tab-content">

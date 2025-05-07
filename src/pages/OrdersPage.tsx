@@ -12,6 +12,12 @@ const OrdersPage: React.FC = () => {
     const [user, setUser] = useState<UserDto | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [imgSrc, setImgSrc] = useState<string>('/assets/images/no_image.webp');
+    const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+
+    const handleImageError = (productId: number) => {
+        setImageErrors(prev => ({...prev, [productId]: true}));
+    };
 
     // Параметры пагинации
     const [currentPage, setCurrentPage] = useState(1);
@@ -79,11 +85,11 @@ const OrdersPage: React.FC = () => {
             case "pending":
                 return "В ожидании";
             case "cancelled":
-                return "#Отменен";
+                return "Отменен";
             case "shipped":
-                return "#В пути";
+                return "В пути";
             case "processing":
-                return "#В обработке";
+                return "В обработке";
             default:
                 return "white";
         }
@@ -160,12 +166,18 @@ const OrdersPage: React.FC = () => {
                                     {order.products?.map((item) => (
                                         <div key={item.orderedProductId} className="order-item">
                                             <div className="item-image">
-                                                <img src={item.imagesUrlAtOrder} alt={item.productName} />
+                                                <img
+                                                    src={imageErrors[item.orderedProductId]
+                                                        ? '/assets/images/no_image.webp'
+                                                        : item.imagesUrlAtOrder}
+                                                    alt={item.productName}
+                                                    onError={() => handleImageError(item.orderedProductId)}
+                                                />
                                             </div>
                                             <div className="item-details">
                                                 <h4>{item.productName}</h4>
                                                 <div className="item-meta">
-                                                    <span>Количество: {item.quantity}</span>
+                                                <span>Количество: {item.quantity}</span>
                                                     <span className="item-price">{item.priceAtOrder}₽</span>
                                                 </div>
                                             </div>

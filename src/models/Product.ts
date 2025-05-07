@@ -10,7 +10,7 @@ export interface ProductDto {
     quantity: number;
     categoryId: number;
     imagesUrl: string[];
-    averageRating: number;
+    averageRating: number | string | null;
     totalFeedbacks: number;
     category: CategoryDto;
     orderedProducts: OrderedProductDto[];

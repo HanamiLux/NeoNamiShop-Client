@@ -1,6 +1,9 @@
 export interface FeedbackDto {
     feedbackId: number;
-    content: string;
-    rate: number;
     userId: string;
+    rate: number;
+    productId: number;
+    content: string;
+    date: Date;
+    userLogin: string;
 }
