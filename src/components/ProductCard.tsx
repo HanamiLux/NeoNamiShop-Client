@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import '../styles/product-card.css';
 import { Link } from "react-router-dom";
 import { Rating } from 'react-simple-star-rating';
@@ -11,11 +11,18 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ id, title, rating, image }) => {
+    const [imgSrc, setImgSrc] = useState<string>(image);
+    const [imageError, setImageError] = useState<boolean>(false);
+
+    const handleImageError = () => {
+        setImageError(true);
+        setImgSrc('/assets/images/no_image.webp');
+    };
     return (
         <Link to={`/product/${id}`} key={id}>
             <div className="product-card">
                 <div className="product-image-container">
-                    <img src={image} alt={title} className="product-image" />
+                    <img src={imageError ? '/assets/images/no_image.webp' : imgSrc} alt={title} onError={handleImageError} className="product-image" />
                     <div className="product-image-overlay"></div>
                 </div>
                 <h3 className="product-title">{title}</h3>

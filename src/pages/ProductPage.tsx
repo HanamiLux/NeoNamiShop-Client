@@ -11,12 +11,25 @@ interface ProductPageProps {
 const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
     const { addToCart } = useCart();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
     const [quantity, setQuantity] = useState(1);
     const [reviewText, setReviewText] = useState('');
     const [reviews] = useState([
         { id: 1, author: 'Пользователь 1', rating: 5, text: 'Отличный товар!', date: '2024-03-15' },
         { id: 2, author: 'Пользователь 2', rating: 4, text: 'Хороший товар, но есть небольшие недочеты', date: '2024-03-14' }
     ]);
+
+    const handleImagesError = (index: number) => {
+        setImageErrors(prev => ({ ...prev, [index]: true }));
+    };
+
+    const [imgSrc, setImgSrc] = useState<string>('/assets/images/no_image.webp');
+    const [imageError, setImageError] = useState<boolean>(false);
+
+    const handleImageError = () => {
+        setImageError(true);
+        setImgSrc('/assets/images/no_image.webp');
+    };
 
 
     const handleAddToCart = () => {
@@ -57,8 +70,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                         </button>
                         <div className="gallery-image">
                             <img
-                                src={product.imagesUrl[currentImageIndex]}
+                                src={imageErrors[currentImageIndex] ? '/assets/images/no_image.webp' : product.imagesUrl[currentImageIndex]}
                                 alt={`${product.productName} - изображение ${currentImageIndex + 1}`}
+                                onError={() => handleImagesError(currentImageIndex)}
                             />
                         </div>
                         <button className="gallery-nav right" onClick={handleNextSlide}>
@@ -77,8 +91,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                 )}
 
                 <div className="product-details">
-                    <h1 className="product-title">{product.productName}</h1>
+                    <h1 className="product-price">{product.productName}</h1>
                     <div className="product-price">{product.price.toLocaleString()}₽</div>
+                    <div className="product-reviews-summary">{product.description.toLocaleString()}</div>
                     <div className="product-reviews-summary">
                         <Star size={20} fill="gold" stroke="gold"/>
                         <span>{product.averageRating.toFixed(1)} ({product.totalFeedbacks} отзывов)</span>
@@ -93,7 +108,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                         <span>{quantity}</span>
                         <button
                             onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))}
-                            disabled={quantity >= product.quantity}
+                            disabled={quantity >= product.quantity }
                         >
                             +
                         </button>
@@ -102,12 +117,13 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                         <button
                             className="btn-important"
                             onClick={handleAddToCart}
+                            disabled={ product.quantity == 0 }
                         >
                             <ShoppingCart size={20}/> В корзину
                         </button>
-                        <button className="btn-important">
-                            <Heart size={20}/> В избранное
-                        </button>
+                        {/*<button className="btn-important">*/}
+                        {/*    <Heart size={20}/> В избранное*/}
+                        {/*</button>*/}
                     </div>
                 </div>
 
@@ -146,7 +162,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ product }) => {
                 <h2 className="recommendations-title">Похожие товары</h2>
                 <div className="recommendation-list">
                     <div className="recommendation-item">
-                        <img src={product.imagesUrl?.[0]} alt={product.productName} />
+                        <img src={imageError ? '/assets/images/no_image.webp' : product.imagesUrl?.[0]} alt={product.productName} onError={handleImageError}  />
                         <div className="recommendation-info">
                             <p>{product.productName}</p>
                             <span>{product.price.toLocaleString()}₽</span>

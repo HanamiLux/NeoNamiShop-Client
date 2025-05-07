@@ -72,6 +72,23 @@ const OrdersPage: React.FC = () => {
         }
     };
 
+    const getStatus = (status: string): string => {
+        switch (status.toLowerCase()) {
+            case "completed":
+                return "Завершен";
+            case "pending":
+                return "В ожидании";
+            case "cancelled":
+                return "#Отменен";
+            case "shipped":
+                return "#В пути";
+            case "processing":
+                return "#В обработке";
+            default:
+                return "white";
+        }
+    };
+
     // Проверка на загрузку данных или ошибку
     if (isLoading) {
         return <div className="loading-spinner">Загрузка...</div>;
@@ -130,7 +147,7 @@ const OrdersPage: React.FC = () => {
                                             border: `1px solid ${getStatusColor(order.status)}`,
                                         }}
                                     >
-                                        {order.status}
+                                        {getStatus(order.status)}
                                     </div>
                                 </div>
 
