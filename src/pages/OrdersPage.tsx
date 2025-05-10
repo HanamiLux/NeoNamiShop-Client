@@ -91,7 +91,7 @@ const OrdersPage: React.FC = () => {
             case "processing":
                 return "В обработке";
             default:
-                return "white";
+                return "";
         }
     };
 
