@@ -169,7 +169,7 @@ const OrdersPage: React.FC = () => {
                                                 <img
                                                     src={imageErrors[item.orderedProductId]
                                                         ? '/assets/images/no_image.webp'
-                                                        : item.imagesUrlAtOrder}
+                                                        : item.imagesUrlAtOrder[0]}
                                                     alt={item.productName}
                                                     onError={() => handleImageError(item.orderedProductId)}
                                                 />

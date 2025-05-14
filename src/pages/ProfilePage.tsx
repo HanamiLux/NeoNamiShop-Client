@@ -230,11 +230,11 @@ const ProfilePage = () => {
 
                             <div className="user-stats">
                                 <div className="user-stat">
-                                    <h3 className="user-stat-value">12</h3>
+                                    <h3 className="user-stat-value">0</h3>
                                     <p className="user-stat-label">Заказов</p>
                                 </div>
                                 <div className="user-stat">
-                                    <h3 className="user-stat-value">15000₽</h3>
+                                    <h3 className="user-stat-value">0 ₽</h3>
                                     <p className="user-stat-label">Сумма покупок</p>
                                 </div>
                             </div>
